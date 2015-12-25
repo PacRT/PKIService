@@ -1,5 +1,19 @@
 # PKIService
 
+## 1. Create Root CA
+## 1.1 Create directories
+
+mkdir -p ca/root-ca/private ca/root-ca/db crl certs
+chmod 700 ca/root-ca/private
+The ca directory holds CA resources, the crl directory holds CRLs, and the certs directory holds user certificates. The directory layout stays the same throughout the tutorial.
+
+## 1.2 Create database
+
+cp /dev/null ca/root-ca/db/root-ca.db
+cp /dev/null ca/root-ca/db/root-ca.db.attr
+echo 01 > ca/root-ca/db/root-ca.crt.srl
+echo 01 > ca/root-ca/db/root-ca.crl.srl
+
 ## 1.3 Create CA request¶
 
 openssl req -new \
