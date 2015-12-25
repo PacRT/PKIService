@@ -16,6 +16,7 @@ openssl ca -selfsign -batch \
     -extensions root_ca_ext \
     -enddate 20301231235959Z \
     -passin pass:pass
+    
 With the openssl ca command we create a self-signed root certificate from the CSR. The configuration is taken from the [ca] section of the root CA configuration file. Note that we specify an end date based on the key length. 2048-bit RSA keys are deemed safe until 2030 (RSA Labs).
 
 ## 1.5 Create initial CRL
