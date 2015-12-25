@@ -138,10 +138,8 @@ openssl crl -in crl/root-ca.crl -text -noout
 Generate CRLs for self-signed certificates 
 openssl ca -gencrl -keyfile ca_key -cert ca_crt -out my_crl.pem
 
-Special Note
+## Special Note
 
 If you have CA certificates in the certificate chain, each of them should have CRL entries, CRL check in NodeJS happens in the following ways. If you have CRL entry in your code, it should have CRLs for all CAs, any missing CRL corresponding to a CA will result to a 
-
-
 
 openssl s_client -connect 127.0.0.1:3000 -cert ../pki-example-2/certs/barney.crt -key ../pki-example-2/certs/barney.key
