@@ -1,13 +1,13 @@
 # PKIService
 
-1.3 Create CA request¶
+## 1.3 Create CA request¶
 
 openssl req -new \
     -config etc/root-ca.conf \
     -out ca/root-ca.csr \
     -keyout ca/root-ca/private/root-ca.key \
     -passin pass:pass -passout pass:pass
-1.4 Create CA certificate
+## 1.4 Create CA certificate
 
 openssl ca -selfsign -batch \
     -config etc/root-ca.conf \
@@ -18,7 +18,7 @@ openssl ca -selfsign -batch \
     -passin pass:pass
 With the openssl ca command we create a self-signed root certificate from the CSR. The configuration is taken from the [ca] section of the root CA configuration file. Note that we specify an end date based on the key length. 2048-bit RSA keys are deemed safe until 2030 (RSA Labs).
 
-1.5 Create initial CRL
+## 1.5 Create initial CRL
 
 openssl ca -gencrl \
     -config etc/root-ca.conf \
@@ -26,13 +26,13 @@ openssl ca -gencrl \
     -passin pass:pass
 With the openssl ca -gencrl command we generate an initial (empty) CRL.
 
-##3. Create TLS CA
-#3.1 Create directories
+# 3. Create TLS CA
+## 3.1 Create directories
 
 mkdir -p ca/tls-ca/private ca/tls-ca/db crl certs
 chmod 700 ca/tls-ca/private
 
-#3.2 Create database
+## 3.2 Create database
 
 cp /dev/null ca/tls-ca/db/tls-ca.db
 cp /dev/null ca/tls-ca/db/tls-ca.db.attr
@@ -45,7 +45,7 @@ openssl req -new \
     -out ca/tls-ca.csr \
     -keyout ca/tls-ca/private/tls-ca.key \
     -passout pass:pass
-3.4 Create CA certificate
+## 3.4 Create CA certificate
 
 openssl ca -batch \
     -config etc/root-ca.conf \
@@ -53,18 +53,18 @@ openssl ca -batch \
     -out ca/tls-ca.crt \
     -extensions signing_ca_ext \
     -passin pass:pass
-3.5 Create initial CRL
+## 3.5 Create initial CRL
 
 openssl ca -gencrl \
     -config etc/tls-ca.conf \
     -out crl/tls-ca.crl \
     -passin pass:pass
-3.6 Create PEM bundle
+## 3.6 Create PEM bundle
 
 cat ca/tls-ca.crt ca/root-ca.crt > \
     ca/tls-ca-chain.pem
-6. Operate TLS CA
-6.1 Create TLS server request
+# 6. Operate TLS CA
+## 6.1 Create TLS server request
 
 SAN=DNS:sensity.com,DNS:*.sensity.com \
 openssl req -new \
@@ -80,7 +80,7 @@ openssl ca -batch \
     -out certs/sensity.com.crt \
     -extensions server_ext \
     -passin pass:pass
-6.3 Create PKCS#12 bundle
+## 6.3 Create PKCS#12 bundle
 
 openssl pkcs12 -export \
     -name "sensity.com (Network Component)" \
@@ -91,7 +91,7 @@ openssl pkcs12 -export \
     -certfile ca/tls-ca-chain.pem \
     -out certs/sensity.com.p12 \
     -passin pass:pass -passout pass:pass
-6.4 Create TLS client request
+## 6.4 Create TLS client request
 
 openssl req -new \
     -config etc/client.conf \
@@ -99,7 +99,7 @@ openssl req -new \
     -keyout certs/device10.key \
     -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 10" \
     -passout pass:pass
-6.5 Create TLS client certificate
+## 6.5 Create TLS client certificate
 
 openssl ca -batch \
     -config etc/tls-ca.conf \
@@ -108,7 +108,7 @@ openssl ca -batch \
     -policy extern_pol \
     -extensions client_ext \
     -passin pass:pass
-6.6 Create PKCS#12 bundle
+## 6.6 Create PKCS#12 bundle
 
 openssl pkcs12 -export \
     -name "Device 10 (Network Access)" \
