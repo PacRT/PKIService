@@ -24,6 +24,7 @@ openssl ca -gencrl \
     -config etc/root-ca.conf \
     -out crl/root-ca.crl \
     -passin pass:pass
+
 With the openssl ca -gencrl command we generate an initial (empty) CRL.
 
 # 3. Create TLS CA
@@ -72,7 +73,8 @@ openssl req -new \
     -out certs/sensity.com.csr \
     -keyout certs/sensity.com.key \
     -subj "/C=US/O=Sensity Systems/CN=*.sensity.com"
-6.2 Create TLS server certificate
+
+## 6.2 Create TLS server certificate
 
 openssl ca -batch \
     -config etc/tls-ca.conf \
@@ -108,6 +110,7 @@ openssl ca -batch \
     -policy extern_pol \
     -extensions client_ext \
     -passin pass:pass
+
 ## 6.6 Create PKCS#12 bundle
 
 openssl pkcs12 -export \
@@ -121,7 +124,7 @@ openssl pkcs12 -export \
     -passin pass:pass -passout pass:pass
 
 
-Revocation 
+## Revocation 
 
 openssl ca \
     -config etc/tls-ca.conf \
@@ -132,10 +135,10 @@ openssl ca -gencrl     -config etc/tls-ca.conf     -out crl/tls-ca.crl     -pass
 
 openssl ca -gencrl     -config etc/root-ca.conf     -out crl/root-ca.crl     -passin pass:pass
 
-Check revocation status 
+### Check revocation status 
 openssl crl -in crl/root-ca.crl -text -noout 
 
-Generate CRLs for self-signed certificates 
+### Generate CRLs for self-signed certificates 
 openssl ca -gencrl -keyfile ca_key -cert ca_crt -out my_crl.pem
 
 ## Special Note
