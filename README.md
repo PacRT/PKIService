@@ -26,12 +26,13 @@ openssl ca -gencrl \
     -passin pass:pass
 With the openssl ca -gencrl command we generate an initial (empty) CRL.
 
-3. Create TLS CA
-3.1 Create directories
+##3. Create TLS CA
+#3.1 Create directories
 
 mkdir -p ca/tls-ca/private ca/tls-ca/db crl certs
 chmod 700 ca/tls-ca/private
-3.2 Create database
+
+#3.2 Create database
 
 cp /dev/null ca/tls-ca/db/tls-ca.db
 cp /dev/null ca/tls-ca/db/tls-ca.db.attr
