@@ -41,7 +41,7 @@ client.on('message', function(topic, message, packet) {
     });
 });
 
-client.publish('/strmv1/certreq', encode({nodeid: 'mynodeid', pass: 'pass'}));
+// client.publish('/strmv1/certreq', encode({nodeid: 'mynodeid', pass: 'pass'}));
 
 var csrcmdtmpl = 'openssl req -new -config etc/client.conf -out certs/{nodeid}.csr -keyout certs/{nodeid}.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN={nodeid}" -passout pass:pass';
 
