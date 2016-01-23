@@ -9,6 +9,14 @@ var websocket = require('websocket-stream')
 
 var ws = require('ws').Server
 
+
+/*
+  before running this server in your local env follow the steps below
+  run pkiTLScacerts.sh - it will create the TLS CA certs chain
+  edit the pkiservercerts.sh and place your proper domain name anf then run pkiservercerts.sh
+  then run pkiclientcerts.sh
+*/
+
 var options = {
   pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12'),
   crl: [fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl'), fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/root-ca.crl')],
