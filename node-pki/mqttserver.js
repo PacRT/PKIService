@@ -1,12 +1,13 @@
-var tls = require('tls');
-var fs = require('fs');
-var aedes = require('aedes')()
+var tls    = require('tls');
+var fs     = require('fs');
+var aedes  = require('aedes')()
 var aedes2 = require('aedes')()
-var net = require('net')
+var net    = require('net')
+var conf   = require('config')
 
 var options = {
-  pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12'),
-  crl: [fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl'), fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/root-ca.crl')],
+  pfx: fs.readFileSync(conf.mqtts.cert),
+  crl: [fs.readFileSync(conf.mqtts.tls_crl), fs.readFileSync(conf.mqtts.root_crl)],
   passphrase: 'pass',
   requestCert: true,
   rejectUnauthorized: true
@@ -15,14 +16,14 @@ var options = {
 //console.log('aedes.handle: ', aedes.handle);
 //var server = require('net').createServer(aedes.handle)
 var server = tls.createServer(options, aedes.handle)
-var port = 8883
+var port = conf.mqtts.port
 
 server.listen(port, function () {
   console.log('server listening on port', port)
 })
 
 var server2 = net.createServer(aedes2.handle)
-var port2 = 1883
+var port2 = conf.mqtt.port
 server2.listen(port2, function() {
   console.log('server listen on port: ', port2)
 })
