@@ -1,11 +1,12 @@
 {
   "mqtts": {
-  	"port"     : "8883",
-  	"cert"     : "/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12",
-  	"tls_crl"  : "/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl",
-  	"root_crl" : "/home/ubuntu/codes/pki-example-3/crl/root-ca.crl"
+  	"server"      : "secsrv.sensity.com",
+  	"port"        : "8883",
+  	"cert"        : "/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12",
+  	"tls_crl"     : "/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl",
+  	"root_crl"    : "/home/ubuntu/codes/pki-example-3/crl/root-ca.crl"
   },
   "mqtt": {
-    "port"     : "1883"
+    "port"        : "1883"
   }
 }
