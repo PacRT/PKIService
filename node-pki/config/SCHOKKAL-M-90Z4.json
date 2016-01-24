@@ -1,0 +1,11 @@
+{
+  "mqtts": {
+  	"port"     : "8883",
+  	"cert"     : "/Users/schokkal/Documents/sfw_workspace/workspace/pki_certs/certs/sensity.com.p12",
+  	"tls_crl"  : "/Users/schokkal/Documents/sfw_workspace/workspace/pki_certs/crl/tls-ca.crl",
+  	"root_crl" : "/Users/schokkal/Documents/sfw_workspace/workspace/pki_certs/crl/root-ca.crl"
+  },
+  "mqtt": {
+  	"port"     : "1883"
+  }
+}
