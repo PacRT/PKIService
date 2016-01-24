@@ -1,12 +1,12 @@
-var tls = require('tls');
-var fs = require('fs');
-var aedes = require('aedes')();
-var http = require('http');
-var https = require('https');
-var net = require('net');
+var tls       = require('tls');
+var fs        = require('fs');
+var aedes     = require('aedes')();
+var http      = require('http');
+var https     = require('https');
+var net       = require('net');
 var websocket = require('websocket-stream')
-
-var ws = require('ws').Server
+var conf      = require("config")
+var ws        = require('ws').Server
 
 /*
   before running this server in your local env follow the steps below
@@ -16,7 +16,7 @@ var ws = require('ws').Server
 */
 
 var options = {
-  pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12'),
+  pfx: fs.readFileSync(conf.mqtts.cert),
   //crl: [fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl'), fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/root-ca.crl')],
   passphrase: 'pass',
   // requestCert: true,
@@ -29,8 +29,9 @@ var options = {
 
 var mqtts_server = tls.createServer(options, aedes.handle);
 
-mqtts_server.listen(8883, '0.0.0.0', function() {
-  console.log('Secure aedes in running on port 8883');
+//mqtts_server.listen(8883, '0.0.0.0', function() {
+  mqtts_server.listen(conf.mqtts.port, function() {
+  console.log('Secure aedes in running on port '+ conf.mqtts.port);
 });
 
 aedes.on('client', function(client) {
