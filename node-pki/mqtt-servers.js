@@ -1,13 +1,13 @@
   
-var tls = require('tls');
-var fs = require('fs');
-var aedes = require('aedes')();
-var http = require('http');
-var https = require('https');
-var net = require('net');
+var tls       = require('tls');
+var fs        = require('fs');
+var aedes     = require('aedes')();
+var http      = require('http');
+var https     = require('https');
+var net       = require('net');
 var websocket = require('websocket-stream')
-
-var ws = require('ws').Server
+var conf      = require('config')
+var ws        = require('ws').Server
 
 
 /*
@@ -18,8 +18,8 @@ var ws = require('ws').Server
 */
 
 var options = {
-  pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12'),
-  crl: [fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/tls-ca.crl'), fs.readFileSync('/home/ubuntu/codes/pki-example-3/crl/root-ca.crl')],
+  pfx: fs.readFileSync(conf.mqtts.cert),
+  crl: [fs.readFileSync(conf.mqtts.tls_crl), fs.readFileSync(conf.mqtts.root_crl)],
   passphrase: 'pass',
   requestCert: true,
   rejectUnauthorized: true
@@ -40,12 +40,12 @@ http_server.listen(8080, '0.0.0.0', function() {
   console.log('WS Server with Aedes service is listening on port 8080');
 });
 
-mqtt_server.listen(1883,'0.0.0.0', function() {
-  console.log('MQTT server bound on port 1883');
+mqtt_server.listen(conf.mqtt.port, function() {
+  console.log('MQTT server bound on port '+ conf.mqtt.port);
 });
 
-mqtts_server.listen(8883, '0.0.0.0', function() {
-  console.log('Secure aedes in running on port 8883');
+mqtts_server.listen(conf.mqtts.port, function() {
+  console.log('Secure aedes in running on port '+ conf.mqtts.port);
 });
 
 aedes.on('client', function(client) {
