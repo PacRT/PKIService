@@ -2,6 +2,7 @@ var fs = require('fs');
 var https = require('https');
 var tls = require('tls');
 var express = require('express');
+var conf = require('config')
 var app = express();
 //var conf = require('./config');
 
@@ -38,7 +39,7 @@ app.post('/savecsrtext', function(req,res) {
 })
 
 
-app.listen(4000, function() {
-  console.log('TLS Server is listening on port 4000')
+app.listen(conf.tls.port, function() {
+  console.log('TLS Server is listening on port '+conf.tls.port)
 });
 
