@@ -4,10 +4,12 @@
   	"port"     : "8883",
   	"cert"     : "./pki/certs/sensity.com.p12",
   	"tls_crl"  : "./pki/crl/tls-ca.crl",
-  	"root_crl" : "./pki/crl/root-ca.crl"
+  	"root_crl" : "./pki/crl/root-ca.crl",
+    "topic_1"  : "/strmv1/certreq"
   },
   "mqtt": {
   	"server"   : "SCHOKKAL-M-90Z4.schokkal.com",
-  	"port"     : "1883"
+  	"port"     : "1883",
+    "topic_1"  : "/strmv1/certreq"
   }
 }

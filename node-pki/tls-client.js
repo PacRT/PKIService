@@ -37,7 +37,7 @@ callback_verifyCSR = function(response) {
 
 cli.parse({
     vCSR: ['v', 'verify CSR', 'file'],
-    sCRT: ['s', 'sign CSR request. args: <csr file> <cert file>'],
+    sCSR: ['s', 'sign CSR request. args: <csr file> <cert file>'],
     gCRT: ['g', 'get certificat', 'file']
 });
 
@@ -52,7 +52,7 @@ cli.main(function(args, options) {
       req.write(csr);
       req.end();
     }
-    if (options.sCRT) {
+    if (options.sCSR) {
       //console.log('Enabling sCRT '+options.sCRT);
       //console.log('Enabling sCRT args '+args[0]+" "+args[1]);
       callback_sCSR = function(response) {
