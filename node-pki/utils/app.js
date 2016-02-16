@@ -18,7 +18,7 @@ var multer  = require('multer')
 var upload = multer({ dest: 'uploads/' })
 
 var options = {
-  pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/sensity.com.p12'),
+  pfx: fs.readFileSync('/home/ubuntu/codes/pki-example-3/certs/pacrt.io.p12'),
   passphrase: 'pass',
   requestCert: true
 };
