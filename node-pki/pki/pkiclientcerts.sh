@@ -3,7 +3,7 @@ openssl req -new \
     -config etc/client.conf \
     -out certs/device10.csr \
     -keyout certs/device10.key \
-    -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 10" \
+    -subj "/C=US/O=PacRT/OU=PacRT Hardware/CN=Device 10" \
     -passout pass:pass
 
 openssl ca -batch \
@@ -17,8 +17,8 @@ openssl ca -batch \
 
 openssl pkcs12 -export \
     -name "Device 10 (Network Access)" \
-    -caname "Sensity TLS CA" \
-    -caname "Sensity Root CA" \
+    -caname "PacRT TLS CA" \
+    -caname "PacRT Root CA" \
     -inkey certs/device10.key \
     -in certs/device10.crt \
     -certfile ca/tls-ca-chain.pem \

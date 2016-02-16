@@ -100,7 +100,7 @@ openssl ca -batch \
 ## 6.3 Create PKCS#12 bundle
 
 openssl pkcs12 -export \
-    -name "sensity.com (Network Component)" \
+    -name "pacrt.io (Network Component)" \
     -caname "PacRT TLS CA" \
     -caname "PacRT Root CA" \
     -inkey certs/pacrt.io.key \
@@ -114,7 +114,7 @@ openssl req -new \
     -config etc/client.conf \
     -out certs/device10.csr \
     -keyout certs/device10.key \
-    -subj "/C=US/O=Sensity/OU=PacRT Hardware/CN=Device 10" \
+    -subj "/C=US/O=PacRT/OU=PacRT Hardware/CN=Device 10" \
     -passout pass:pass
 ## 6.5 Create TLS client certificate
 
