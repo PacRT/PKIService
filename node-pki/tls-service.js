@@ -102,7 +102,6 @@ app.post('/signcsr', function(req, res) {
                     +'-out certs/device10.p12 passin pass:pass -passout pass:pass'
 
     execSync(verifyCSR, function (err, stdout, stderr) {
-
       if (err) {
         console.error(err);
         return;
