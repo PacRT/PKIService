@@ -21,17 +21,13 @@ openssl ca -selfsign -batch \
     -enddate 301231235959Z \
     -passin pass:pass
 
-
 openssl ca -gencrl \
     -config etc/root-ca.conf \
     -out crl/root-ca.crl \
     -passin pass:pass
 
-
-
 mkdir -p ca/tls-ca/private ca/tls-ca/db crl certs
 chmod 700 ca/tls-ca/private
-
 
 cp /dev/null ca/tls-ca/db/tls-ca.db
 cp /dev/null ca/tls-ca/db/tls-ca.db.attr
