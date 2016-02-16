@@ -1,5 +1,5 @@
 var fs      = require('fs');
-var https   = require('https');
+//var https   = require('https');
 var tls     = require('tls');
 var express = require('express');
 var conf    = require('config')
@@ -18,8 +18,8 @@ app.use( bodyParser.json());       // to support JSON-encoded bodies
   //extended: true
 //})); 
 
-var multer    = require('multer')
-var upload    = multer({ dest: 'uploads/' })
+var multer    = require('multer');
+var upload    = multer({ dest: 'uploads/' });
 var csrupload = upload.single('csr')
 var verifyCSR = 'openssl req -text -in -noout'
 
@@ -100,7 +100,11 @@ app.post('/signcsr', function(req, res) {
                     +'-caname \"Sensity TLS CA\" -caname \"Sensity Root CA\" -inkey certs/device10.key ' 
                     +'-in pki/certs/device12_web.crt -certfile pki/ca/tls-ca-chain.pem '
                     +'-out certs/device10.p12 passin pass:pass -passout pass:pass'
+<<<<<<< HEAD
     execSync(verifyCSR, function (err, stdout, stderr) {
+=======
+    execSync(verifyCSR, function (err, stdout, stderr)  {
+>>>>>>> 36187afc0b3aba9d8b583d1401b4507c043e05eb
       if (err) {
         console.error(err);
         return;
@@ -108,7 +112,11 @@ app.post('/signcsr', function(req, res) {
       console.log(stdout);
       if (stdout.indexOf("Certificate Request:") > -1) {
         console.log('CSR verification Success')
+<<<<<<< HEAD
         execSync(signCSR, function (err, stdout, stderr)  {
+=======
+        execSync(signCSR, function (err, stdout, stderr) {
+>>>>>>> 36187afc0b3aba9d8b583d1401b4507c043e05eb
          if (err) {
            console.error(err);
            return;
@@ -131,7 +139,11 @@ app.post('/getcert', function(req, res) {
     var createCSR = 'openssl req -new -config pki/etc/client.conf -out pki/certs/device13_web.csr -keyout pki/certs/device13_web.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 13" -passout pass:pass'
     var createCRT = 'openssl ca -batch -config pki/etc/tls-ca.conf -in pki/certs/device13_web.csr -out pki/certs/device13_web.crt -policy extern_pol -extensions client_ext -passin pass:pass'
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
+<<<<<<< HEAD
     execSync(createCSR, function (err, stdout, stderr)  {
+=======
+    execSync(createCSR, function(err, stdout, stderr) {
+>>>>>>> 36187afc0b3aba9d8b583d1401b4507c043e05eb
       if (err) {
           console.error(err);
           return;
@@ -141,7 +153,11 @@ app.post('/getcert', function(req, res) {
         //if (stdout.indexOf("Certificate Request:") > -1) {
         console.log('CSR Creation Success')
         // var csr = fs.readFileSync('pki/certs/device13_web.csr')
+<<<<<<< HEAD
         execSync(createCRT, function (err, stdout, stderr)  {
+=======
+        execSync(createCRT, function (err, stdout, stderr) {
+>>>>>>> 36187afc0b3aba9d8b583d1401b4507c043e05eb
           if (err) {
             console.error(err);
             console.log('CRT Creation failed')
