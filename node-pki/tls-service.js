@@ -96,10 +96,6 @@ app.post('/signcsr', function(req, res) {
     var signCSR   = 'openssl ca -batch -config pki/etc/tls-ca.conf -in pki/certs/device12_web.csr '
                      +'-out pki/certs/device12_web.crt -policy extern_pol -extensions client_ext '
                      +'-passin pass:pass'
-    var pkcs12    = 'openssl pkcs12 -export -name \"Device 10 (Network Access)\" '
-                    +'-caname \"Sensity TLS CA\" -caname \"Sensity Root CA\" -inkey certs/device10.key ' 
-                    +'-in pki/certs/device12_web.crt -certfile pki/ca/tls-ca-chain.pem '
-                    +'-out certs/device10.p12 passin pass:pass -passout pass:pass'
     execSync(verifyCSR, (err, stdout, stderr) => {
       if (err) {
         console.error(err);
@@ -124,16 +120,30 @@ app.post('/signcsr', function(req, res) {
   });
 })
 
+
+
 // Get the certificate
 app.post('/getcert', function(req, res) {
   console.log('Calling getcert req : '+req.ip)
     // key and csr
     var createCSR = 'openssl req -new -config pki/etc/client.conf -out pki/certs/device13_web.csr -keyout pki/certs/device13_web.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 13" -passout pass:pass'
     var createCRT = 'openssl ca -batch -config pki/etc/tls-ca.conf -in pki/certs/device13_web.csr -out pki/certs/device13_web.crt -policy extern_pol -extensions client_ext -passin pass:pass'
+    var pkcs12    = 'openssl pkcs12 -export '
+                    +'-name "Device 13 (Network Access)" '
+                    +'-caname "Sensity TLS CA" '
+                    +'-caname "Sensity Root CA" '
+                    +'-inkey pki/certs/device13_web.key '
+                    +'-in pki/certs/device13_web.crt '
+                    +'-certfile pki/ca/tls-ca-chain.pem '
+                    +'-out pki/certs/device13_web.p12 '
+                    +'-passin pass:pass -passout pass:pass'
+
+
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
     execSync(createCSR, (err, stdout, stderr) => {
       if (err) {
           console.error(err);
+          res.end("Error")
           return;
        }
       console.log(stdout);
@@ -145,15 +155,48 @@ app.post('/getcert', function(req, res) {
           if (err) {
             console.error(err);
             console.log('CRT Creation failed')
+            res.end("Error")
             return;
           }
           console.log("Client Certificate got signed");
-          var cert = fs.readFileSync('pki/certs/device13_web.crt');
-          res.end(cert)
+          execSync(pkcs12, (err, stdout, stderr) => {
+            if (err) {
+              console.error(err);
+              console.log('PKCS Creation failed')
+              res.end("Error")
+              return;
+            }
+            var pkcs = fs.readFileSync('pki/certs/device13_web.p12');
+            res.end(pkcs)
+          });
         });
       }
       else
         console.log('CSR Creation failed')
+  });
+})
+
+app.post('/revoke/:fname', function(req, res) {
+  console.log('Calling revoke')
+  var data = '';
+  req.setEncoding('utf8');
+  req.on('data', function(chunk) {
+      data += chunk;
+  });
+  req.on('end', function() {
+     console.log('Calling revoke data : '+req.params.fname)
+    
+    var revoke = 'openssl ca -config pki/etc/tls-ca.conf -revoke pki/certs/'+req.params.fname+' '
+                    +'-crl_reason affiliationChanged -passin pass:pass'
+    execSync(revoke, (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+        res.end('Revoke Failed')
+        return;
+       }
+      console.log('CSR revoke Success '+stdout+"   stderr : "+stderr)
+      res.end('Revocation Success')
+    });
   });
 })
 
