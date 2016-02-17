@@ -82,31 +82,31 @@ cat ca/tls-ca.crt ca/root-ca.crt > \
 # 6. Operate TLS CA
 ## 6.1 Create TLS server request
 
-SAN=DNS:sensity.com,DNS:*.sensity.com \
+SAN=DNS:pacrt.io,DNS:*.pacrt.io \
 openssl req -new \
     -config etc/server.conf \
-    -out certs/sensity.com.csr \
-    -keyout certs/sensity.com.key \
-    -subj "/C=US/O=Sensity Systems/CN=*.sensity.com"
+    -out certs/pacrt.io.csr \
+    -keyout certs/pacrt.io.key \
+    -subj "/C=US/O=PacRT IO/CN=*.pacrt.io"
 
 ## 6.2 Create TLS server certificate
 
 openssl ca -batch \
     -config etc/tls-ca.conf \
-    -in certs/sensity.com.csr \
-    -out certs/sensity.com.crt \
+    -in certs/pacrt.io.csr \
+    -out certs/pacrt.io.crt \
     -extensions server_ext \
     -passin pass:pass
 ## 6.3 Create PKCS#12 bundle
 
 openssl pkcs12 -export \
-    -name "sensity.com (Network Component)" \
-    -caname "Sensity TLS CA" \
-    -caname "Sensity Root CA" \
-    -inkey certs/sensity.com.key \
-    -in certs/sensity.com.crt \
+    -name "pacrt.io (Network Component)" \
+    -caname "PacRT TLS CA" \
+    -caname "PacRT Root CA" \
+    -inkey certs/pacrt.io.key \
+    -in certs/pacrt.io.crt \
     -certfile ca/tls-ca-chain.pem \
-    -out certs/sensity.com.p12 \
+    -out certs/pacrt.io.p12 \
     -passin pass:pass -passout pass:pass
 ## 6.4 Create TLS client request
 
@@ -114,7 +114,7 @@ openssl req -new \
     -config etc/client.conf \
     -out certs/device10.csr \
     -keyout certs/device10.key \
-    -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 10" \
+    -subj "/C=US/O=PacRT/OU=PacRT Hardware/CN=Device 10" \
     -passout pass:pass
 ## 6.5 Create TLS client certificate
 
@@ -130,8 +130,8 @@ openssl ca -batch \
 
 openssl pkcs12 -export \
     -name "Device 10 (Network Access)" \
-    -caname "Sensity TLS CA" \
-    -caname "Sensity Root CA" \
+    -caname "PacRT TLS CA" \
+    -caname "PacRT Root CA" \
     -inkey certs/device10.key \
     -in certs/device10.crt \
     -certfile ca/tls-ca-chain.pem \
