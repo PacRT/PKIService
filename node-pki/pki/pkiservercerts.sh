@@ -4,7 +4,7 @@ openssl req -new \
     -config etc/server.conf \
     -out certs/pacrt.io.csr \
     -keyout certs/pacrt.io.key \
-    -subj "/C=US/O=PacRT.IO/CN=*.pacrt.io"
+    -subj "/C=US/O=PacRT DOT IO/CN=*.pacrt.io"
 
 openssl ca -batch \
     -config etc/tls-ca.conf \
