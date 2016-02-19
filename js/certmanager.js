@@ -43,11 +43,11 @@ client.on('message', function(topic, message, packet) {
 
 // client.publish('/strmv1/certreq', encode({nodeid: 'mynodeid', pass: 'pass'}));
 
-var csrcmdtmpl = 'openssl req -new -config pki/etc/client.conf -out pki/certs/{nodeid}.csr -keyout pki/certs/{nodeid}.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN={nodeid}" -passout pass:pass';
+var csrcmdtmpl = 'openssl req -new -config ../pki/etc/client.conf -out ../pki/certs/{nodeid}.csr -keyout ../pki/certs/{nodeid}.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN={nodeid}" -passout pass:pass';
 
-var certcmdtmpl = 'openssl ca -batch -config pki/etc/tls-ca.conf -in pki/certs/{nodeid}.csr -out pki/certs/{nodeid}.crt -policy extern_pol -extensions client_ext -passin pass:pass';
+var certcmdtmpl = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/{nodeid}.csr -out ../pki/certs/{nodeid}.crt -policy extern_pol -extensions client_ext -passin pass:pass';
 
-var certcmdtmpl2 = 'openssl ca -batch -config pki/etc/tls-ca.conf -in <(echo "{csr}") -out pki/certs/{nodeid}.crt -policy extern_pol -extensions client_ext -passin pass:pass';
+var certcmdtmpl2 = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in <(echo "{csr}") -out ../pki/certs/{nodeid}.crt -policy extern_pol -extensions client_ext -passin pass:pass';
 
 var gencert = function(profile, callback) {
   if(profile.csr != null) {
@@ -64,8 +64,8 @@ var gencert = function(profile, callback) {
   var certcmd = format(certcmdtmpl, profile);
   execsync(csrcmd, puts);
   execsync(certcmd, puts);
-  var keypath = format('pki/certs/{nodeid}.key', profile);
-  var certpath = format('pki/certs/{nodeid}.crt', profile);
+  var keypath = format('../pki/certs/{nodeid}.key', profile);
+  var certpath = format('../pki/certs/{nodeid}.crt', profile);
   var key = fs.readFileSync(keypath);
   var pass = format('{pass}', profile);
   console.log('key: ', key)
