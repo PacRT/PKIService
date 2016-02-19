@@ -33,9 +33,7 @@ var options_gCRT = {
 // sign CSR
 //// 1. --sign --csr_in <csr input file> --cert_out <cert file>
 // genCert
-//// 1. --gen_cert --cert_out <cert file>
-//// 2. --gen_cert --cert_out <cert file> --pkcs <file>
-//// 3. --gen_cert --pkcs <file> --pkcs_out <pkacs package name>
+//// 1. --gen_cert --pkcs <file> --pkcs_out <pkacs package name>
 // genCSR 
 cli.parse({
     "verify"   : [false, "verify the csr/cert"],
