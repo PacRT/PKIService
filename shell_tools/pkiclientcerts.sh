@@ -8,6 +8,7 @@ openssl req -new \
 
 openssl ca -batch \
     -config ../pki/etc/tls-ca.conf \
+    -notext \
     -in ../pki/certs/device10.csr \
     -out ../pki/certs/device10.crt \
     -policy extern_pol \

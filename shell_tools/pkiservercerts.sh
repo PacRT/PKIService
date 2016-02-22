@@ -8,6 +8,7 @@ openssl req -new \
 
 openssl ca -batch \
     -config ../pki/etc/tls-ca.conf \
+    -notext \
     -in ../pki/certs/pacrt.io.csr \
     -out ../pki/certs/pacrt.io.crt \
     -extensions server_ext \

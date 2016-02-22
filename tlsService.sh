@@ -2,7 +2,7 @@
 
 #export NODE_ENV=production
 # Uncomment following and edit config/development.jason to run in development mode
-#export NODE_ENV=development
+export NODE_ENV=development
 PACRT_HOME=`pwd`
 export PACRT_HOME
 cd ./js

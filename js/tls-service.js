@@ -6,13 +6,20 @@ var express = require('express');
 var app     = express();
 var execSync = require('child_process').exec;
 var fs      = require('fs');
+var cors = require('cors')
 //var conf = require('./config');
+
+
+var corsOptions = {
+  origin  : ['http://localhost:7979','http://paperlessclub.org:7979'],
+  methods : ['GET', 'PUT', 'POST']
+};
 
 var bodyParser = require('body-parser')
 
 app.use(express.static('views'));
 app.use(express.static('bootstrap-3.3.6'));
-
+app.use(cors(corsOptions));
 app.use( bodyParser.json());       // to support JSON-encoded bodies
 //app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   //extended: true
@@ -36,6 +43,20 @@ app.post('/uploadcsr', function(req, res) {
     res.end('{ csr: '+'Success'+ ' }')
   });
 })
+
+app.post('/api/v1/login', function(req, res) {
+  console.log('Calling login')
+  var data = '';
+  req.setEncoding('utf8');
+  res.send({API_TOKEN : 'token', USER_NAME : 'Sudhakar'})
+  /*req.on('data', function(chunk) {
+      data += chunk;
+  });
+  req.on('end', function() {
+    console.log('login data : '+data)
+    res.end('')
+  });*/
+});
 
 app.post('/verifycsr', function(req, res) {
   console.log('Calling verifycsr')
@@ -209,7 +230,6 @@ app.post('/savecsrtext', function(req,res) {
   console.log('Req body', req.body)
   res.end('Success\n')
 })
-
 
 app.listen('4000', function() {
   console.log('TLS Server is listening on port '+'4000')

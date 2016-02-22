@@ -15,6 +15,7 @@ openssl req -new \
 
 openssl ca -selfsign -batch \
     -config ../pki/etc/root-ca.conf \
+    -notext \
     -in ../pki/ca/root-ca.csr \
     -out ../pki/ca/root-ca.crt \
     -extensions root_ca_ext \
@@ -42,6 +43,7 @@ openssl req -new \
 
 openssl ca -batch \
     -config ../pki/etc/root-ca.conf \
+    -notext \
     -in ../pki/ca/tls-ca.csr \
     -out ../pki/ca/tls-ca.crt \
     -extensions signing_ca_ext \
