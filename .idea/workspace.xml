@@ -2,12 +2,44 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="494b1b45-e3c9-46c5-9dec-fed732d01768" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/tls-check-client.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/tls-check-server.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pki/etc/client.conf" afterPath="$PROJECT_DIR$/pki/etc/client.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pki/etc/root-ca.conf" afterPath="$PROJECT_DIR$/pki/etc/root-ca.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pki/etc/server.conf" afterPath="$PROJECT_DIR$/pki/etc/server.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pki/etc/tls-ca.conf" afterPath="$PROJECT_DIR$/pki/etc/tls-ca.conf" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca.csr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/01.pem" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/02.pem" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.crl.srl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.crl.srl.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.crt.srl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.crt.srl.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.db.attr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.db.attr.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/db/root-ca.db.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/root-ca/private/root-ca.key" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca-chain.pem" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca.csr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/01.pem" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/02.pem" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.crl.srl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.crl.srl.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.crt.srl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.crt.srl.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db.attr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db.attr.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db.old" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/ca/tls-ca/private/tls-ca.key" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/device10.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/device10.csr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/device10.key" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/device10.p12" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/pacrt.io.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/pacrt.io.csr" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/pacrt.io.key" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/certs/pacrt.io.p12" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/crl/root-ca.crl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/pki/crl/tls-ca.crl" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PKIService.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -88,10 +120,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tls-service.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="tls-service.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/tls-service.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-3.2285383">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -108,10 +140,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tls-check-client.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tls-check-client.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/tls-check-client.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.12180974">
+            <state vertical-scroll-proportion="0.0">
               <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
               <folding />
             </state>
@@ -256,56 +288,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="pki" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pki" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="certs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pki" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ca" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PKIService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -387,13 +369,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="74" y="147" width="1680" height="959" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -556,20 +538,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pki/ca/tls-ca/db/tls-ca.db.old">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tlsService.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -710,18 +678,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/tls-service.js">
+    <entry file="file://$PROJECT_DIR$/js/tls-check-client.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/tls-check-client.js">
+    <entry file="file://$PROJECT_DIR$/js/tls-service.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12180974">
-          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
+        <state vertical-scroll-proportion="-3.2285383">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
