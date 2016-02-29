@@ -5,9 +5,11 @@ var express = require('express');
 //var conf    = require('../config')
 var app     = express();
 var execSync = require('child_process').exec;
-var fs      = require('fs');
-var cors = require('cors')
+var cors = require('cors');
 //var conf = require('./config');
+var bunyan    = require('bunyan');
+
+var log = bunyan.createLogger({name: 'DewDropQ'});
 
 
 var corsOptions = {
@@ -15,7 +17,7 @@ var corsOptions = {
   methods : ['GET', 'PUT', 'POST']
 };
 
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
 app.use(express.static('views'));
 app.use(express.static('bootstrap-3.3.6'));
@@ -26,26 +28,26 @@ app.use( bodyParser.json());       // to support JSON-encoded bodies
 //})); 
 
 var multer    = require('multer');
-var upload    = multer({ dest: 'uploads/' });
-var csrupload = upload.single('csr')
-var verifyCSR = 'openssl req -text -in -noout'
+//var upload    = multer({ dest: 'uploads/' });
+//var csrupload = upload.single('csr');
+//var verifyCSR = 'openssl req -text -in -noout';
 
 
 app.post('/uploadcsr', function(req, res) {
-  console.log('Calling csrupload')
+  log.info('Calling csrupload');
   var data = '';
   req.setEncoding('utf8');
   req.on('data', function(chunk) {
       data += chunk;
   });
   req.on('end', function() {
-    console.log('uploadcsr data : '+data)
-    res.end('{ csr: '+'Success'+ ' }')
+    log.info('uploadcsr data : '+data);
+    res.end('{ csr: '+'Success'+ ' }');
   });
 })
 
 app.post('/api/v1/login', function(req, res) {
-  console.log('Calling login')
+  log.info('Calling login');
   var data = '';
   req.setEncoding('utf8');
   res.send({API_TOKEN : 'token', USER_NAME : 'Sudhakar'})
@@ -53,103 +55,103 @@ app.post('/api/v1/login', function(req, res) {
       data += chunk;
   });
   req.on('end', function() {
-    console.log('login data : '+data)
+    log.info('login data : '+data)
     res.end('')
   });*/
 });
 
 app.post('/verifycsr', function(req, res) {
-  console.log('Calling verifycsr')
+  log.info('Calling verifycsr');
   var data = '';
   req.setEncoding('utf8');
   req.on('data', function(chunk) {
       data += chunk;
   });
   req.on('end', function() {
-     console.log('Calling verifycsr data : '+data)
+     log.info('Calling verifycsr data : '+data);
       
       fs.writeFile("../pki/certs/temp.csr", data, function(err) {
         if(err) {
-            return console.log(err);
+            return log.info(err);
           }    
-          console.log("The CSR file was saved!");
+          log.info("The CSR file was saved!");
       });
       //execsync(verifyCSR+data, puts);
       //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
       execSync('openssl req -text -in '+'../pki/certs/temp.csr'+' -noout', function (err, stdout, stderr) {
         if (err) {
             console.error(err);
-            res.end('{ csr: '+err+ ' }')
+            res.end('{ csr: '+err+ ' }');
             return;
           }
-        console.log(stdout);
+        log.info(stdout);
         if (stdout.indexOf("Certificate Request:") > -1) {
-          console.log('Success')
-          res.end('{ csr: '+stdout+ ' }')
+          log.info('Success');
+          res.end('{ csr: '+stdout+ ' }');
         }
         else
-          console.log('CSR verification failed')
-          res.end('{ csr: '+stdout+ ' }')
+          log.info('CSR verification failed');
+          res.end('{ csr: '+stdout+ ' }');
       });
   });
 })
 
 // sign the csr
 app.post('/signcsr', function(req, res) {
-  console.log('Calling signcsr req : '+req.ip)
+  log.info('Calling signcsr req : '+req.ip);
   var data = '';
   req.setEncoding('utf8');
   req.on('data', function(chunk) {
       data += chunk;
   });
   req.on('end', function() {
-    console.log('Calling signcsr data :'+data)
+    log.info('Calling signcsr data :'+data);
       
     fs.writeFile("../pki/certs/device12_web.csr", data, function(err) {
       if(err) {
-        return console.log(err);
+        return log.info(err);
       }    
-        console.log("The file was saved!");
+        log.info("The file was saved!");
     });
     //execsync(verifyCSR+data, puts);
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
     var verifyCSR = 'openssl req -text -in '+'../pki/certs/device12_web.csr'+' -noout'
     var signCSR   = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/device12_web.csr '
                      +'-out ../pki/certs/device12_web.crt -policy extern_pol -extensions client_ext '
-                     +'-passin pass:pass'
+                     +'-passin pass:pass';
 
     execSync(verifyCSR, function (err, stdout, stderr) {
       if (err) {
         console.error(err);
         return;
       }
-      console.log(stdout);
+      log.info(stdout);
       if (stdout.indexOf("Certificate Request:") > -1) {
-        console.log('CSR verification Success')
+        log.info('CSR verification Success');
         execSync(signCSR, function (err, stdout, stderr)  {
          if (err) {
            console.error(err);
            return;
          }
         var cert = fs.readFileSync('../pki/certs/device12_web.crt');  // cert + tls-chain -> pkcs package
-        console.log("Client Certificate got signed");
-        res.end(cert)
+        log.info("Client Certificate got signed");
+        res.end(cert);
         });
       }
       else
-        console.log('CSR verification failed')
+        log.info('CSR verification failed');
     });
   });
-})
+});
 
 
 
 // Get the certificate
 app.post('/getcert', function(req, res) {
-  console.log('Calling getcert req : '+req.ip)
+  log.info('Calling getcert req : '+req.ip);
     // key and csr
-    var createCSR = 'openssl req -new -config ../pki/etc/client.conf -out ../pki/certs/device13_web.csr -keyout ../pki/certs/device13_web.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 13" -passout pass:pass'
-    var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/device13_web.csr -out ../pki/certs/device13_web.crt -policy extern_pol -extensions client_ext -passin pass:pass'
+    var createCSR = 'openssl req -new -config ../pki/etc/client.conf -out ../pki/certs/device13_web.csr -keyout ../pki/certs/device13_web.key -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 13" -passout pass:pass';
+    var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/device13_web.csr -out ../pki/certs/device13_web.crt -policy extern_pol -extensions client_ext -passin pass:pass';
     var pkcs12    = 'openssl pkcs12 -export '
                     +'-name "Device 13 (Network Access)" '
                     +'-caname "Sensity TLS CA" '
@@ -158,7 +160,7 @@ app.post('/getcert', function(req, res) {
                     +'-in ../pki/certs/device13_web.crt '
                     +'-certfile ../pki/ca/tls-ca-chain.pem '
                     +'-out ../pki/certs/device13_web.p12 '
-                    +'-passin pass:pass -passout pass:pass'
+                    +'-passin pass:pass -passout pass:pass';
 
 
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
@@ -166,27 +168,27 @@ app.post('/getcert', function(req, res) {
     execSync(createCSR, function(err, stdout, stderr) {
       if (err) {
           console.error(err);
-          res.end("Error")
+          res.end("Error");
           return;
        }
-      console.log(stdout);
+      log.info(stdout);
       if (fs.existsSync('../pki/certs/device13_web.csr')) {
         //if (stdout.indexOf("Certificate Request:") > -1) {
-        console.log('CSR Creation Success')
+        log.info('CSR Creation Success');
         // var csr = fs.readFileSync('pki/certs/device13_web.csr')
-        execSync(createCRT, function (err, stdout, stderr)  {
+        execSync(createCRT, function(err, stdout, stderr)  {
           if (err) {
             console.error(err);
-            console.log('CRT Creation failed')
-            res.end("Error")
+            log.info('CRT Creation failed');
+            res.end("Error");
             return;
           }
-          console.log("Client Certificate got signed");
-          execSync(pkcs12, (err, stdout, stderr) => {
+          log.info("Client Certificate got signed");
+          execSync(pkcs12, function(err, stdout, stderr) {
             if (err) {
               console.error(err);
-              console.log('PKCS Creation failed')
-              res.end("Error")
+              log.info('PKCS Creation failed');
+              res.end("Error");
               return;
             }
             var pkcs = fs.readFileSync('../pki/certs/device13_web.p12');
@@ -195,30 +197,30 @@ app.post('/getcert', function(req, res) {
         });
       }
       else
-        console.log('CSR Creation failed')
+        log.info('CSR Creation failed')
   });
 })
 
 app.post('/revoke/:fname', function(req, res) {
-  console.log('Calling revoke')
+  log.info('Calling revoke');
   var data = '';
   req.setEncoding('utf8');
   req.on('data', function(chunk) {
       data += chunk;
   });
   req.on('end', function() {
-     console.log('Calling revoke data : '+req.params.fname)
+     log.info('Calling revoke data : '+req.params.fname)
     
     var revoke = 'openssl ca -config ../pki/etc/tls-ca.conf -revoke ../pki/certs/'+req.params.fname+' '
                     +'-crl_reason affiliationChanged -passin pass:pass'
-    execSync(revoke, (err, stdout, stderr) => {
+    execSync(revoke, function(err, stdout, stderr)  {
       if (err) {
         console.error(err);
-        res.end('Revoke Failed')
+        res.end('Revoke Failed');
         return;
        }
-      console.log('CSR revoke Success '+stdout+"   stderr : "+stderr)
-      res.end('Revocation Success')
+      log.info('CSR revoke Success '+stdout+"   stderr : "+stderr)
+      res.end('Revocation Success');
     });
   });
 })
@@ -227,11 +229,11 @@ app.post('/revoke/:fname', function(req, res) {
 //app.post('/signCSR', function(req, res)
 
 app.post('/savecsrtext', function(req,res) {
-  console.log('Req body', req.body)
-  res.end('Success\n')
+  log.info('Req body', req.body);
+  res.end('Success\n');
 })
 
 app.listen('4000', function() {
-  console.log('TLS Server is listening on port '+'4000')
+  log.info('TLS Server is listening on port '+'4000');
 });
 
