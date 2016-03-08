@@ -1,5 +1,5 @@
 #! /bin/sh
-mkdir -p ../pki/ca/root-ca/private ../pki/ca/root-ca/db ../pki/crl ../pki/certs
+mkdir -p ../pki/ca/root-ca/private ../pki/ca/root-ca/db ../pki/crl ../pki/certs ../pki/revoked
 chmod 700 ../pki/ca/root-ca/private
 
 cp /dev/null ../pki/ca/root-ca/db/root-ca.db
