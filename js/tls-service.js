@@ -6,13 +6,10 @@ var express = require('express');
 //var conf    = require('../config')
 var app     = express();
 var execSync = require('child_process').exec;
-<<<<<<< HEAD
 var execS = require('child_process').execSync;
 var fs      = require('fs');
 var cors = require('cors')
-=======
-var cors = require('cors');
->>>>>>> 0ae94c5a2c6173ecaec2684528e483ab4866ba57
+
 //var conf = require('./config');
 var bunyan    = require('bunyan');
 
