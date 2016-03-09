@@ -1,4 +1,4 @@
-# PKIService - version 1.0
+# PKIService - version 1.0.0
 
 ## 1. Create Root CA
 ## 1.1 Create directories
