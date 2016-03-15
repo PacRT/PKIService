@@ -3,6 +3,10 @@ var cli  = require('cli');
 var http = require('http');
 var fs   = require('fs');
 
+var msgpack = require('msgpack5')()
+  , encode  = msgpack.encode
+  , decode  = msgpack.decode
+
 var options_csr = {
   host: 'localhost',
   path: '/verifycsr',
@@ -35,19 +39,18 @@ var options_gCRT = {
 // genCert
 //// 1. --gen_cert --pkcs <file> --pkcs_out <pkacs package name>
 // genCSR 
+ //   "isServer" : [false, "Request for Server Certs"],
+ //   "isClient" : [false, "Request for Client Certs"],
+ //     "gen_csr"  : [false, "generate CSR"],
 cli.parse({
     "verify"   : [false, "verify the csr/cert"],
     "csr_in"   : [false, "Input CSR file", 'file'],
     "cert_in"  : [false, "Input Certificate file"],
-    "isServer" : [false, "Request for Server Certs"],
-    "isClient" : [false, "Request for Client Certs"],
-    "gen_csr"  : [false, "generate CSR"],
     "gen_cert" : [false, "generate certificate"],
     "pkcs"     : [false, "PKCS 12 package file"],
     "pkcs_out" : [false, "PKCS 12 package file", 'file', 'mypkcs.p12'],
     "sign"     : [false, "sign CSR"],
     "cert_out" : [false, "output cert file",'file', 'mycert.crt'],
-    "revoke"   : [false, "Revoke Certificate", 'file'],
     "host"     : [false, 'TLS server Host']
 });
 
@@ -73,7 +76,7 @@ cli.main(function(args, options) {
       req.write(csr);
       req.end();
     }
-    if (options.sign && options.csr_in) {
+    else if (options.sign && options.csr_in) {
       console.log('Enabling Sign '+options.sign);
       //console.log('Enabling sCRT args '+args[0]+" "+args[1]);
       callback_sCSR = function(response) {
@@ -98,7 +101,7 @@ cli.main(function(args, options) {
       req.end();
       return
     }
-    if (options.gen_cert && options.pkcs) {
+    else if (options.gen_cert && options.pkcs) {
       console.log('Enabling get cert '+options.gen_cert);
       callback_gCRT = function(response) {
         var str = ''
@@ -120,7 +123,7 @@ cli.main(function(args, options) {
       //req.write('');
       req.end();
     }
-    if (options.revoke) {
+    /*if (options.revoke) {
       console.log('Enabling revoke'+options.revoke);
       callback = function(response) {
         var str = ''
@@ -135,5 +138,8 @@ cli.main(function(args, options) {
       //This is the data we are posting, it needs to be a string or a buffer
       //req.write('');
       req.end();
+    }*/
+    else {
+      console.log(" invalid options, please check ./tls-client --help")
     }
 });
