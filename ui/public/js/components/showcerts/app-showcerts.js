@@ -6,13 +6,26 @@ var React = require('react');
 var ShowCertsStore = require('../../stores/app-showcerts-store');
 var ShowCertsActions = require('../../actions/app-showcerts-actions');
 var Table = require('react-bootstrap/lib/Table');
-var selectedCerts = []
+var DropDownMenu = require('material-ui/lib/DropDownMenu');
+var MenuItem = require('material-ui/lib/menus/menu-item');
+var Button = require('react-bootstrap/lib/Button');
+
 var _ = require('underscore');
+var revocation_reasons = [
+                          "Unspecified",
+                          "KeyCompromise",
+                          "CACompromise",
+                          "AffiliationChanged",
+                          "Superseded",
+                          "CessationOfOperation",
+                          "RemoveFromCRL"
+                       ]
 var ShowCerts = React.createClass({
    getInitialState: function(){
         return {
             "certs_url" : [],
-            "selected_certs":[]
+            "selected_certs":[],
+            "revocationresaon": "unspecified"
         }
     },
     componentDidMount: function() {
@@ -34,23 +47,29 @@ var ShowCerts = React.createClass({
             "selected_certs" : selected_certs
         });
     },
-   /* _selectAll : function() {
-        var certs_url = this.state.certs_url
-        this.setState({
-            "select_all" : !this.state.select_all
-        })
-        certs_url.map(function(url){
-            url["isChecked"] = this.state.select_all
-        })
+    _handleRevoke : function(event){
+        var payload = { certpaths: this.state.selected_certs, revocationresaon: this.state.revocationresaon}
+        ShowCertsActions.revokeCerts(payload);
+        var certs_url = ShowCertsStore.getCertsURL();
+        certs_url.map(function(cert){cert["checked"]=false})
         this.setState({
             certs_url : certs_url
         });
-    },*/
-    _handleClick : function(event){
-        //ExampleAction.updateMyDetails("Pacrt", "Developer");
-        // get the list of certs that are selected 
-        console.log(this.state.selected_certs);
-        ShowCertsActions.revokeCerts(this.state.selected_certs);
+        var selected_certs = []
+        this.setState({
+            selected_certs : selected_certs
+        });
+        this.setState({
+            revocationresaon : "unspecified"
+        });
+    },
+    //_handleRevocationReason: function(event, index, value) {
+    _handleRevocationReason: function(event) {
+        console.log("_handleRevocationReason")
+        console.log(event.target.value)
+        this.setState({
+            revocationresaon : event.target.value
+        });
     },
     _onChange: function() {
         var certs_url = ShowCertsStore.getCertsURL();
@@ -60,6 +79,9 @@ var ShowCerts = React.createClass({
     },
     render: function () {
         var _this = this;
+        var clearLeftPadding = {
+            paddingLeft: "0px"
+        }
         return (
                 <div>
                 <Table striped bordered condensed hover>
@@ -72,37 +94,38 @@ var ShowCerts = React.createClass({
                     <th> Expiry Date </th>
                     <th> </th>
                 </thead>
-                    <tbody>     
+                <tbody>     
                     {
                         this.state.certs_url.map(function(url,index){
                             return(
                                 <tr>
-                                    <td>
-                                    {index+1}
-                                    </td>
-                                    <td>
-                                    {url["Issuer"]}
-                                    </td>
-                                    <td>
-                                    {url["Subject"]}
-                                    </td>
-                                    <td>
-                                    {url["Alternative Name"]}
-                                    </td>
-                                    <td>
-                                    {url["Issued Date"]}
-                                    </td>
-                                    <td>
-                                    {url["Expiry Date"]}
-                                    </td>
-                                    <td><input type="checkbox" onChange={_this._handleCheckClick.bind(null,index)}/></td>                                    
+                                    <td>{index+1}</td>
+                                    <td>{url["Issuer"]}</td>
+                                    <td>{url["Subject"]}</td>
+                                    <td>{url["Alternative Name"]}</td>
+                                    <td>{url["Issued Date"]}</td>
+                                    <td>{url["Expiry Date"]}</td>
+                                    <td><input type="checkbox" checked={url["checked"]} onChange={_this._handleCheckClick.bind(null,index)}/></td>                                    
                                 </tr>
                             )
                         })
                     }
-                    </tbody>
+                </tbody>
                 </Table>
-              <input type="button" value="Revoke" width="148" height="148" onClick={this._handleClick}/>
+                <div className="col-md-6" style={clearLeftPadding}>
+                    <div className="col-md-4" style={clearLeftPadding}>
+                    <select className="form-control" value={this.state.revocationresaon} onChange={this._handleRevocationReason}> 
+                      {
+                        revocation_reasons.map(function(reason){
+                          return (<option value={reason}>{reason}</option>)
+                        }) 
+                      }
+                    </select>
+                    </div>
+                    <div className="col-md-2">
+                        <Button onClick={this._handleRevoke}>Revoke</Button>
+                    </div>
+                    </div>
             </div>
         )
     }

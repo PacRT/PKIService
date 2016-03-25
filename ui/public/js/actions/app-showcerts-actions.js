@@ -8,8 +8,10 @@ var APIConstants = require('../constants/app-api-url.js');
 var API = require('../utils/API.js');
 var APIURL = require('../utils/getAPIURL');
 var ShowCertsActions = {
-    getShowCerts:function(){
+    getShowCerts:function(arg1){
         API.get(APIConstants.SHOW_CERTS).then(function(response){
+            if(!_.isUndefined(arg1))
+                console.log(response);
             var result = JSON.parse(response.text);
             AppDispatcher.handleViewAction({
                 actionType: AppConstants.SHOW_CERTS,
@@ -19,13 +21,15 @@ var ShowCertsActions = {
         });
     },
     revokeCerts:function(certs){
+        var _this = this
     	API.post(APIConstants.REVOKE_CERTS, certs).then(function(response){
-            var result = JSON.parse(response.text);
+            _this.getShowCerts("after deletinf certs")
+            /*var result = JSON.parse(response.text);
             console.log(result)
             AppDispatcher.handleViewAction({
                 actionType: AppConstants.REVOKE_CERTS,
                 response: result
-            });
+            });*/
         });
     }
 }
