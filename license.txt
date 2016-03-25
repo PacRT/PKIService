@@ -1,0 +1,2 @@
+This software is released under Apache Public License 2.0. The full text is here -
+http://www.apache.org/licenses/LICENSE-2.0.txt

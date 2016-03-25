@@ -9,7 +9,7 @@ var browserify = require('gulp-browserify'),
 
 var util = require('util');
 var exec = require('child_process').exec;
-var root_js_path = './public/assets/bower_components/';
+var root_js_path = './bower_components/';
 var root_css_path = './public/assets/css/';
 
 var vendor_js_path = [

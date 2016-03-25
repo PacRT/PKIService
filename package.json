@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "PacRT.IO",
-  "license": "ISC",
+  "license": "APL 2.0",
   "dependencies": {
     "aedes": "^0.11.1",
     "body-parser": "^1.14.2",
