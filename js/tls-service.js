@@ -282,7 +282,7 @@ app.post('/getcert', function(req, res) {
             return;
           }
           console.log("Client Certificate got signed");
-          execSync(pkcs12, (err, stdout, stderr) => {
+          execSync(pkcs12, function(err, stdout, stderr) {
             if (err) {
               console.error(err);
               console.log('PKCS Creation failed')
@@ -335,31 +335,31 @@ app.post('/api/v1/revoke', function(req, res) {
     if (revokeCertificate(certFile, req.body.revocationresaon) ) result = result + certFile + ','
     else failed = failed + certFile + ','
 
-  })
-  console.log('data')
-  res.send('Revocation Success : '+result+ ' \nFailed : '+failed)
+  });
+  console.log('data');
+  res.send('Revocation Success : '+result+ ' \nFailed : '+failed);
 })
 
 app.post('/revoke/:fname', function(req, res) {
-  console.log('Calling revoke')
+  console.log('Calling revoke');
   var data = '';
   req.setEncoding('utf8');
   req.on('data', function(chunk) {
       data += chunk;
   });
   req.on('end', function() {
-     console.log('Calling revoke data : '+req.params.fname)
+     console.log('Calling revoke data : '+req.params.fname);
     
     var revoke = 'openssl ca -config ../pki/etc/tls-ca.conf -revoke ../pki/certs/'+req.params.fname+' '
                     +'-crl_reason affiliationChanged -passin pass:pass'
-    execSync(revoke, (err, stdout, stderr) => {
+    execSync(revoke, function(err, stdout, stderr)  {
       if (err) {
         console.error(err);
-        res.end('Revoke Failed')
+        res.end('Revoke Failed');
         return;
        }
       console.log('CRT revoke Success '+stdout+"   stderr : "+stderr)
-      res.send('Revocation Success : '+fname)
+      res.send('Revocation Success : '+fname);
     });
   });
 })
@@ -368,11 +368,11 @@ app.post('/revoke/:fname', function(req, res) {
 //app.post('/signCSR', function(req, res)
 
 app.post('/savecsrtext', function(req,res) {
-  console.log('Req body', req.body)
-  res.end('Success\n')
+  console.log('Req body', req.body);
+  res.end('Success\n');
 })
 
 app.listen('4000', function() {
-  console.log('TLS Server is listening on port '+'4000')
+  console.log('TLS Server is listening on port '+'4000');
 });
 
