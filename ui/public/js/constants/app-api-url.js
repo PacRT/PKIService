@@ -7,5 +7,6 @@ module.exports = {
     LOG_IN          : '/login',
     SHOW_CERTS      : '/show/certificates',
     REVOKED_CERTS   : '/show/revokedcerts',
-    REVOKE_CERTS    : '/revoke'
+    REVOKE_CERTS    : '/revoke',
+    UPLOAD_CSR      : '/uploadCSR'
 };
