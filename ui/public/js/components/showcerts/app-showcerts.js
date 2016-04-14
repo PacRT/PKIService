@@ -87,10 +87,9 @@ var ShowCerts = React.createClass({
                 <Table striped bordered condensed hover>
                 <thead>
                     <th> Id     </th>
-                    <th> Issuer </th>
+                    <th> Status </th>
                     <th> Subject </th>
-                    <th> Alternative Name </th>
-                    <th> Issued Date </th>
+                    <th> File Name </th>
                     <th> Expiry Date </th>
                     <th> </th>
                 </thead>
@@ -100,10 +99,9 @@ var ShowCerts = React.createClass({
                             return(
                                 <tr>
                                     <td>{index+1}</td>
-                                    <td>{url["Issuer"]}</td>
+                                    <td>{url["Status"]}</td>
                                     <td>{url["Subject"]}</td>
-                                    <td>{url["Alternative Name"]}</td>
-                                    <td>{url["Issued Date"]}</td>
+                                    <td>{url["File Name"]}</td>
                                     <td>{url["Expiry Date"]}</td>
                                     <td><input type="checkbox" checked={url["checked"]} onChange={_this._handleCheckClick.bind(null,index)}/></td>                                    
                                 </tr>

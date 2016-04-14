@@ -8,7 +8,11 @@ var app     = express();
 var execSync = require('child_process').exec;
 var execS = require('child_process').execSync;
 var fs      = require('fs');
-var cors = require('cors')
+var cors = require('cors');
+
+var readline = require('readline');
+var stream = require('stream');
+
 //var conf = require('./config');
 
 var msgpack = require('msgpack5')()
@@ -44,6 +48,14 @@ var certInfoParse = {'Issuer:': 'Issuer' ,
                      'Not After :': 'Expiry Date'
                     }
 
+var certDBInfo =    {'Status': 'Status' ,
+                     'Subject': 'Subject',
+                     'Revoked Date': 'Revoked Date',
+                     'Revoked Reason': 'Revoked Reason',
+                     'File Name': 'File Name',
+                     'Expiry Date': 'Expiry Date'
+                    }
+
 /*var parsed_result = {Issuer: {[Country: 'value', Common_Name: 'value'] }, 
                      Subject: {[Country: 'value', Common_Name: 'value'] }, 
                      SAN: 'value',
@@ -65,6 +77,85 @@ app.post('/uploadcsr', function(req, res) {
     res.end('{ csr: '+'Success'+ ' }')
   });
 })
+
+var dateformat = function(d) {
+    var result = new Date (d.slice(6, 8)+':'+d.slice(8, 10)+':'+d.slice(10, 12)+' '+d.slice(2, 4)+"/"+d.slice(4, 6)+"/"+d.slice(0, 2)+" Z") 
+    console.log(result)
+    return result.toString()
+}
+
+var readDBCerts = function() {
+  var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
+   var certsDBArray = cert_db.split('\n')
+   console.log(certsDBArray)
+   var certInfo = {}
+   var certs = []
+   for (var line in certsDBArray) {
+    //console.log(line)
+    if ( certsDBArray[line] != '') {
+      var cArray = certsDBArray[line].split('\t')
+      console.log(cArray)
+      if ( cArray[0] != 'R' ) {
+      certInfo['Status'] = cArray[0] == 'V' ? "Valid" : cArray[0] == 'E' ? "Expired" : "Unknown";
+      certInfo['Expiry Date'] = dateformat(cArray[1])
+      certInfo['File Name'] = cArray[4];
+      certInfo['Subject'] = cArray[5];
+      console.log(certInfo)
+      certs.push(certInfo)
+   }  } }
+  console.log(certs)
+  return certs
+};
+
+
+var readDBRevokedCerts = function() {
+  var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
+   var certsDBArray = cert_db.split('\n')
+   console.log(certsDBArray)
+   var certInfo = {}
+   var certs = []
+   for (var line in certsDBArray) {
+    //console.log(line)
+    if ( certsDBArray[line] != '') {
+      var cArray = certsDBArray[line].split('\t')
+      console.log(cArray)
+      if ( cArray[0] == 'R' ) {
+      certInfo['Status'] = cArray[0] == 'R' ? "Revoked" : "Unknown";
+      certInfo['Expiry Date'] = dateformat(cArray[1])
+      certInfo['Revoked Date'] = cArray[2] == '' ? '' : dateformat(cArray[2].substring(0, cArray[2].indexOf(',')));
+      certInfo['Revoked Reason'] = cArray[2] == '' ? '' : cArray[2].substring(cArray[2].indexOf(',')+1);
+      certInfo['File Name'] = cArray[4];
+      certInfo['Subject'] = cArray[5];
+      console.log(certInfo)
+      certs.push(certInfo)
+   }  } }
+  console.log(certs)
+  return certs
+};
+
+var readCertsDB = function() {
+  var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
+   var certsDBArray = cert_db.split('\n')
+   console.log(certsDBArray)
+   var certInfo = {}
+   var certs = []
+   for (var line in certsDBArray) {
+    //console.log(line)
+    if ( certsDBArray[line] != '') {
+      var cArray = certsDBArray[line].split('\t')
+      console.log(cArray)
+      certInfo['Status'] = cArray[0] == 'V' ? "Valid" : cArray[0] == 'E' ? "Expired" : cArray[0] == 'R' ? "Revoked" : "Unknown";
+      certInfo['Expiry Date'] = dateformat(cArray[1])
+      certInfo['Revoked Date'] = cArray[2] == '' ? '' : dateformat(cArray[2].substring(0, cArray[2].indexOf(',')));
+      certInfo['Revoked Reason'] = cArray[2] == '' ? '' : cArray[2].substring(cArray[2].indexOf(',')+1);
+      certInfo['File Name'] = cArray[4];
+      certInfo['Subject'] = cArray[5];
+      console.log(certInfo)
+      certs.push(certInfo)
+   }  }
+  console.log(certs)
+  return certs
+};
 
 var _getAllCertFiles = function(dir) {
     var results = [];
@@ -116,8 +207,12 @@ app.get('/api/v1/show/certificates', function(req, res) {
     console.log("cert file name : " + certFiles[certFile])
     jsResult.push(certParser(certFiles[certFile]))
   }
+
   console.log(jsResult)
-  res.send(jsResult)
+  
+  //res.send(jsResult)
+  res.send(readDBCerts())
+
 });
 
 app.get('/api/v1/show/revokedcerts', function(req, res) {
@@ -131,7 +226,7 @@ app.get('/api/v1/show/revokedcerts', function(req, res) {
     jsResult.push(certParser(certFiles[certFile]))
   }
   console.log(jsResult)
-  res.send(jsResult)
+  res.send(readDBRevokedCerts())
 });
 
 
@@ -219,6 +314,8 @@ app.post('/signcsr', function(req, res) {
       console.log(stdout);
       if (stdout.indexOf("Certificate Request:") > -1) {
         console.log('CSR verification Success')
+        // get Subject 
+        
         execSync(signCSR, function (err, stdout, stderr)  {
          if (err) {
            console.error(err);

@@ -38,11 +38,11 @@ var RevokedCerts = React.createClass({
                 <Table striped bordered condensed hover>
                 <thead>
                     <th> Id     </th>
-                    <th> Issuer </th>
                     <th> Subject </th>
-                    <th> Alternative Name </th>
-                    <th> Issued Date </th>
+                    <th> File Name </th>
                     <th> Expiry Date </th>
+                    <th> Revoked Date </th>
+                    <th> Revoked Reason </th>
                 </thead>
                     <tbody>     
                     {
@@ -53,19 +53,19 @@ var RevokedCerts = React.createClass({
                                     {index+1}
                                     </td>
                                     <td>
-                                    {url["Issuer"]}
-                                    </td>
-                                    <td>
                                     {url["Subject"]}
                                     </td>
                                     <td>
-                                    {url["Alternative Name"]}
-                                    </td>
-                                    <td>
-                                    {url["Issued Date"]}
+                                    {url["File Name"]}
                                     </td>
                                     <td>
                                     {url["Expiry Date"]}
+                                    </td>
+                                    <td>
+                                    {url["Revoked Date"]}
+                                    </td>
+                                    <td>
+                                    {url["Revoked Reason"]}
                                     </td>
                                 </tr>
                             )
