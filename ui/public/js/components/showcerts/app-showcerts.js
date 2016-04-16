@@ -39,10 +39,10 @@ var ShowCerts = React.createClass({
         var cert = this.state.certs_url[cert_index];
         var selected_certs = this.state.selected_certs;
 
-        if(this.state.selected_certs.indexOf(cert["Cert Path"]) == -1)
-            selected_certs.push(cert["Cert Path"]);
+        if(this.state.selected_certs.indexOf(cert["Subject"]) == -1)
+            selected_certs.push(cert["Subject"]);
         else
-            selected_certs.splice(this.state.selected_certs.indexOf(cert["Cert Path"]),1);
+            selected_certs.splice(this.state.selected_certs.indexOf(cert["Subject"]),1);
         this.setState({
             "selected_certs" : selected_certs
         });

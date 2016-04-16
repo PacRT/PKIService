@@ -88,11 +88,11 @@ var readDBCerts = function() {
   var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
    var certsDBArray = cert_db.split('\n')
    console.log(certsDBArray)
-   var certInfo = {}
    var certs = []
    for (var line in certsDBArray) {
     //console.log(line)
     if ( certsDBArray[line] != '') {
+      var certInfo = {}
       var cArray = certsDBArray[line].split('\t')
       console.log(cArray)
       if ( cArray[0] != 'R' ) {
@@ -102,8 +102,10 @@ var readDBCerts = function() {
       certInfo['Subject'] = cArray[5];
       console.log(certInfo)
       certs.push(certInfo)
+      console.log(" XXXXXXXXXXX    Certs")
+      console.log(certs)
    }  } }
-  console.log(certs)
+  //console.log(certs)
   return certs
 };
 
@@ -112,11 +114,11 @@ var readDBRevokedCerts = function() {
   var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
    var certsDBArray = cert_db.split('\n')
    console.log(certsDBArray)
-   var certInfo = {}
    var certs = []
    for (var line in certsDBArray) {
     //console.log(line)
     if ( certsDBArray[line] != '') {
+      var certInfo = {}
       var cArray = certsDBArray[line].split('\t')
       console.log(cArray)
       if ( cArray[0] == 'R' ) {
@@ -199,7 +201,7 @@ var certParser = function(file) {
 
 app.get('/api/v1/show/certificates', function(req, res) {
   console.log('Calling Show certificate')
-  var certPath  = '../pki/certs'
+  /*var certPath  = '../pki/certs'
   var certFiles = _getAllCertFiles(certPath)
   console.log(certFiles)
   var jsResult = []
@@ -208,7 +210,7 @@ app.get('/api/v1/show/certificates', function(req, res) {
     jsResult.push(certParser(certFiles[certFile]))
   }
 
-  console.log(jsResult)
+  console.log(jsResult)*/
   
   //res.send(jsResult)
   res.send(readDBCerts())
@@ -217,7 +219,7 @@ app.get('/api/v1/show/certificates', function(req, res) {
 
 app.get('/api/v1/show/revokedcerts', function(req, res) {
   console.log('Calling Show revokedcerts')
-  var certPath  = '../pki/revoked'
+ /* var certPath  = '../pki/revoked'
   var certFiles = _getAllCertFiles(certPath)
   console.log(certFiles)
   var jsResult = []
@@ -225,7 +227,7 @@ app.get('/api/v1/show/revokedcerts', function(req, res) {
     console.log("cert file name : " + certFiles[certFile])
     jsResult.push(certParser(certFiles[certFile]))
   }
-  console.log(jsResult)
+  console.log(jsResult)*/
   res.send(readDBRevokedCerts())
 });
 
@@ -302,9 +304,7 @@ app.post('/signcsr', function(req, res) {
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
 
     var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
-    var signCSR   = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' '
-                     +'-out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext '
-                     +'-passin pass:pass'
+
 
     execSync(verifyCSR, function (err, stdout, stderr) {
       if (err) {
@@ -315,7 +315,18 @@ app.post('/signcsr', function(req, res) {
       if (stdout.indexOf("Certificate Request:") > -1) {
         console.log('CSR verification Success')
         // get Subject 
-        
+        //if ( stdout has "Subject:" then get the full line ..)
+
+        console.log(stdout.indexOf("Subject:"))
+        console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var signCSR  = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' '
+                     +'-out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext '
+                     +'-passin pass:pass'
         execSync(signCSR, function (err, stdout, stderr)  {
          if (err) {
            console.error(err);
@@ -343,20 +354,10 @@ app.post('/getcert', function(req, res) {
   var csrFile = 'CSR_'+randomInt+'_'+timemillies+'.csr'
   var keyFile = 'KEY_'+randomInt+'_'+timemillies+'.key'
   var certFile = 'CERT_'+randomInt+'_'+timemillies+'.crt'
-  var pkcsFile = 'PKCS_'+randomInt+'_'+timemillies+'.p12'
+  
     // key and csr
+    var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
     var createCSR = 'openssl req -new -config ../pki/etc/client.conf -out ../pki/certs/'+csrFile+' -keyout ../pki/certs/'+keyFile+' -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device '+randomInt+'" -passout pass:pass'
-    var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' -out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext -passin pass:pass'
-    var pkcs12    = 'openssl pkcs12 -export '
-                    +'-name "Device 13 (Network Access)" '
-                    +'-caname "Sensity TLS CA" '
-                    +'-caname "Sensity Root CA" '
-                    +'-inkey ../pki/certs/'+keyFile+' '
-                    +'-in ../pki/certs/'+certFile+'  '
-                    +'-certfile ../pki/ca/tls-ca-chain.pem '
-                    +'-out ../pki/certs/'+pkcsFile+' '
-                    +'-passin pass:pass -passout pass:pass'
-
 
     //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
 
@@ -370,6 +371,28 @@ app.post('/getcert', function(req, res) {
       if (fs.existsSync('../pki/certs/'+csrFile)) {
         //if (stdout.indexOf("Certificate Request:") > -1) {
         console.log('CSR Creation Success')
+        stdout =  execS(verifyCSR, { encoding: 'utf8' });
+        console.log(stdout)
+
+        console.log(stdout.indexOf("Subject:"))
+        console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var pkcsFile = certsubject+'.p12'
+        var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' -out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext -passin pass:pass'
+        var pkcs12    = 'openssl pkcs12 -export '
+                    +'-name "Device 13 (Network Access)" '
+                    +'-caname "Sensity TLS CA" '
+                    +'-caname "Sensity Root CA" '
+                    +'-inkey ../pki/certs/'+keyFile+' '
+                    +'-in ../pki/certs/'+certFile+'  '
+                    +'-certfile ../pki/ca/tls-ca-chain.pem '
+                    +'-out ../pki/certs/'+pkcsFile+' '
+                    +'-passin pass:pass -passout pass:pass'
+
         // var csr = fs.readFileSync('pki/certs/device13_web.csr')
         execSync(createCRT, function (err, stdout, stderr)  {
           if (err) {
@@ -408,7 +431,7 @@ var revokeCertificate = function(certFile, reason) {
     console.log(result)
     result = execS(updateRootCrl, { encoding: 'utf8' });
     console.log(result)
-    execS('mv '+certFile+' ../pki/revoked/', { encoding: 'utf8' });
+    //execS('mv '+certFile+' ../pki/revoked/', { encoding: 'utf8' });
     return true
    /* execS(revoke, (err, stdout, stderr) => {
       if (err) {
@@ -428,6 +451,8 @@ app.post('/api/v1/revoke', function(req, res) {
   console.log('data')
   console.log(req.body)
   req.body.certpaths.map(function(certFile){
+    console.log(certFile)
+    certFile = "../pki/certs/"+certFile.substring(certFile.indexOf("/")+1).replace(/\//g,'_').replace(/ /g,'_').trim()+".crt"
     console.log(certFile)
     if (revokeCertificate(certFile, req.body.revocationresaon) ) result = result + certFile + ','
     else failed = failed + certFile + ','
