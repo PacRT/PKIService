@@ -7,6 +7,8 @@ var AppDispatcher = require('../dispatchers/app-dispatcher.js');
 var APIConstants = require('../constants/app-api-url.js');
 var API = require('../utils/API.js');
 var APIURL = require('../utils/getAPIURL');
+var hashistory = require('react-router').hashistory;
+
 var VerifyCSRActions = {
     verifyCSR:function(csrInfo){
         API.post(APIConstants.VERIFY_CSR, csrInfo).then(function(response){
@@ -25,6 +27,7 @@ var VerifyCSRActions = {
                 actionType: AppConstants.VERIFY_CSR,
                 response: result
             });
+            hashistory.push("verifycsr");
         });
     }/*
     revokeCerts:function(certs){
