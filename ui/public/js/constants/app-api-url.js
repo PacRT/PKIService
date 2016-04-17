@@ -8,5 +8,6 @@ module.exports = {
     SHOW_CERTS      : '/show/certificates',
     REVOKED_CERTS   : '/show/revokedcerts',
     REVOKE_CERTS    : '/revoke',
-    UPLOAD_CSR      : '/uploadCSR'
+    UPLOAD_CSR      : '/uploadCSR',
+    VERIFY_CSR      : '/verifycsr'
 };

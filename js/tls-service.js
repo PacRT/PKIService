@@ -239,6 +239,45 @@ app.post('/api/v1/login', function(req, res) {
   res.send({API_TOKEN : 'token', USER_NAME : 'Sudhakar'})
 });
 
+
+app.post('/api/v1/verifycsr', function(req, res) {
+  console.log('Calling verifycsr')
+  var data = '';
+  req.setEncoding('utf8');
+  console.log(req.body)
+  req.on('data', function(chunk) {
+      data += chunk;
+  });
+  req.on('end', function() {
+     console.log('Calling verifycsr data : '+data)
+      
+      fs.writeFile("../pki/certs/temp.csr", data, function(err) {
+        if(err) {
+            return console.log(err);
+          }    
+          console.log("The CSR file was saved!");
+      });
+      //execsync(verifyCSR+data, puts);
+      //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
+      execSync('openssl req -text -in '+'../pki/certs/temp.csr'+' -noout', function (err, stdout, stderr) {
+        if (err) {
+            console.error(err);
+            res.end('{ csr: '+err+ ' }')
+            return;
+          }
+        console.log(stdout);
+        if (stdout.indexOf("Certificate Request:") > -1) {
+          console.log('Success')
+          res.end('{ csr: '+stdout+ ' }')
+        }
+        else
+          console.log('CSR verification failed')
+          res.end('{ csr: '+stdout+ ' }')
+      });
+  });
+})
+
+
 app.post('/verifycsr', function(req, res) {
   console.log('Calling verifycsr')
   var data = '';
@@ -322,6 +361,8 @@ app.post('/signcsr', function(req, res) {
         var temp = stdout.substring(stdout.indexOf("Subject:")+8)
         temp = temp.substring(0, temp.indexOf("\n"))
         temp = temp.replace(/, /g,'_').trim()
+
+        //TODO check the file exists, if it is then ? delete and sign again or pass on the existing one 
         var certsubject = temp.replace(/ /g,'_').trim()
         var certFile = certsubject+'.crt'
         var signCSR  = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' '
