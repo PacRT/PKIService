@@ -91,8 +91,9 @@ var UploadCSR = React.createClass({
         });
     },
     verifyCSR : function(){
-      csr["csr"] = this.state.textAreaCSR != "" ? this.state.textAreaCSR : this.refs.csrText.contentWindow.document.body.innerText;
-      VerifyCSRActions.verifyCSR(csr)
+        var csr = {}
+        csr["csr"] = this.state.textAreaCSR != "" ? this.state.textAreaCSR : this.refs.csrText.contentWindow.document.body.innerText;
+        VerifyCSRActions.verifyCSR(csr)
     },
     cancelUpload:function(){
         this.setState({
