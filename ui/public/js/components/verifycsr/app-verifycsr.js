@@ -10,7 +10,6 @@ var VerifyCSR = React.createClass({
     render: function () {
         return (
             <div>
-                <h4>Verify CSR</h4>
                 <UploadCSR/>
             </div>
         )

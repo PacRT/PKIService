@@ -27,7 +27,6 @@ var VerifyCSRActions = {
                 actionType: AppConstants.VERIFY_CSR,
                 response: result
             });
-            hashistory.push("verifycsr");
         });
     }/*
     revokeCerts:function(certs){

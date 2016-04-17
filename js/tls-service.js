@@ -377,11 +377,12 @@ app.post('/signcsr', function(req, res) {
         execSync(signCSR, function (err, stdout, stderr)  {
          if (err) {
            console.error(err);
+           res.end("cert creation failed")
            return;
          }
         var cert = fs.readFileSync('../pki/certs/'+certFile);  // cert + tls-chain -> pkcs package
         console.log("Client Certificate got signed");
-        res.end(cert)
+        res.pipe(cert)
         });
       }
       else
