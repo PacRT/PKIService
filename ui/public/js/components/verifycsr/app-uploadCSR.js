@@ -82,6 +82,9 @@ var UploadCSR = React.createClass({
           }
       }
     },
+    verifyCSR : function(){
+      console.log(this.refs.csrText.contentWindow.document.body.innerText);
+    },
     cancelUpload:function(){
         this.setState({
             files:[],
@@ -124,7 +127,7 @@ var UploadCSR = React.createClass({
 
                         <Col xs={12} md={9}>
                             { this.state.files.length > 0 ?
-                             <iframe src={this.state.files[0].preview} frameborder="0" height="400"
+                             <iframe ref="csrText" id="csrText" src={this.state.files[0].preview} frameborder="0" height="400"
                              width="95%"></iframe> : <textarea rows="10" cols="160">
                              Paste CSR text here
                              </textarea>
@@ -133,7 +136,7 @@ var UploadCSR = React.createClass({
                         </Col>
 
                     </Row>
-                    <RaisedButton  label="Verify CSR" style={styles.verify_button}/>
+                    <RaisedButton  label="Verify CSR" style={styles.verify_button} onTouchTap={this.verifyCSR}/>
 
 
                 </Grid>
