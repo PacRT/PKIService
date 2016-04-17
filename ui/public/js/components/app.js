@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React       = require('react');
 var NavBar      = require('./navbar/app-navbar');
-//var Notification = require('./notification/app-notification');
+var Notification = require('./notification/app-notification');
 var HomePage    = require('./home/app-home');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 
@@ -18,7 +18,7 @@ var APP = React.createClass({
         <NavBar />
         <div className="container" style={style}>
             {this.props.children || <HomePage/>}
-             
+             <Notification/>
         </div>
       </div>
     );
