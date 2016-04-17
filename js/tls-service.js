@@ -269,7 +269,7 @@ app.post('/api/v1/verifycsr', function(req, res) {
       execSync('openssl req -text -in '+'../pki/certs/temp.csr'+' -noout', function (err, stdout, stderr) {
         if (err) {
             console.error(err);
-            res.end('{ csr: '+err+ ' }')
+            res.end('CSR Verification failed : '+err)
             return;
           }
         console.log(stdout);
