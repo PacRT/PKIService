@@ -93,7 +93,7 @@ var UploadCSR = React.createClass({
     },
     verifyCSR : function(){
         var csr = {}
-        csr["csr"] = this.state.textAreaCSR != "Paste CST text here"  ?  this.state.textAreaCSR : this.refs.csrText.contentWindow.document.body.innerText;
+        csr["csr"] = _.has(this.refs, "csrText")  ? this.refs.csrText.contentWindow.document.body.innerText : this.state.textAreaCSR ;
         VerifyCSRActions.verifyCSR(csr)
     },
     cancelUpload:function(){
