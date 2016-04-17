@@ -279,7 +279,7 @@ app.post('/api/v1/verifycsr', function(req, res) {
         }
         else
           console.log('CSR verification failed')
-          res.end('CSR verification failed')
+          res.end('CSR Verification failed')
       });
 })
 
