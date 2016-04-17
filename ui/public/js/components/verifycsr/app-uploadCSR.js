@@ -86,9 +86,7 @@ var UploadCSR = React.createClass({
       }
     },
     _handleTextAreaChange : function(event){
-        this.setState({
-            "textAreaCSR" : event.target.value
-        });
+        this.refs.csrTextArea.innerHTML = "";
     },
     verifyCSR : function(){
         var csr = {}
@@ -138,7 +136,7 @@ var UploadCSR = React.createClass({
                         <Col xs={12} md={9}>
                             { this.state.files.length > 0 ?
                              <iframe ref="csrText" id="csrText" src={this.state.files[0].preview} frameborder="0" height="400"
-                             width="95%"></iframe> : <textarea ref="csrTextArea" onkeyup={this._handleTextAreaChange} onchange={this._handleTextAreaChange} rows="10" cols="160">
+                             width="95%"></iframe> : <textarea onFocus={this._handleTextAreaChange} ref="csrTextArea"  rows="10" cols="160">
                              Paste CSR text here
                              </textarea>
                             }
