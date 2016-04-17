@@ -244,11 +244,18 @@ app.post('/api/v1/verifycsr', function(req, res) {
   console.log('Calling verifycsr')
   var data = '';
   req.setEncoding('utf8');
-  console.log(req.body)
+  console.log(req.body.csr)
   req.on('data', function(chunk) {
       data += chunk;
   });
-  req.on('end', function() {
+  console.log(data)
+  console.log("after data XXXXXXXXXX")
+  console.log(req.body.csr)
+
+  console.log("after CSR XXXXXXXXXX")
+  data = req.body.csr
+
+
      console.log('Calling verifycsr data : '+data)
       
       fs.writeFile("../pki/certs/temp.csr", data, function(err) {
@@ -268,13 +275,12 @@ app.post('/api/v1/verifycsr', function(req, res) {
         console.log(stdout);
         if (stdout.indexOf("Certificate Request:") > -1) {
           console.log('Success')
-          res.end('{ csr: '+stdout+ ' }')
+          res.end('CSR verification Success')
         }
         else
           console.log('CSR verification failed')
-          res.end('{ csr: '+stdout+ ' }')
+          res.end('CSR verification failed')
       });
-  });
 })
 
 

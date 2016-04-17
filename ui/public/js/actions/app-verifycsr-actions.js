@@ -10,9 +10,17 @@ var APIURL = require('../utils/getAPIURL');
 var VerifyCSRActions = {
     verifyCSR:function(csrInfo){
         API.post(APIConstants.VERIFY_CSR, csrInfo).then(function(response){
-            if(!_.isUndefined(arg1))
+            if(!_.isUndefined(csrInfo))
                 console.log(response);
-            var result = JSON.parse(response.text);
+            var result = response.text;
+            var notification = {
+                    open : true,
+                    message : result
+                };
+            AppDispatcher.handleViewAction({
+                    actionType : AppConstants.SHOW_NOTIFICATION,
+                    response : notification
+            });
             AppDispatcher.handleViewAction({
                 actionType: AppConstants.VERIFY_CSR,
                 response: result

@@ -10,6 +10,8 @@ var LinearProgress = require('material-ui/lib/linear-progress');
 var CardHeader = require('material-ui/lib/card/card-header');
 var RaisedButton = require('material-ui/lib/raised-button');
 
+var VerifyCSRActions = require('../../actions/app-verifycsr-actions');
+
 var UploadCSR = React.createClass({
     getInitialState:function() {
         return {
@@ -84,6 +86,9 @@ var UploadCSR = React.createClass({
     },
     verifyCSR : function(){
       console.log(this.refs.csrText.contentWindow.document.body.innerText);
+      var csr = {}
+      csr["csr"] = this.refs.csrText.contentWindow.document.body.innerText
+      VerifyCSRActions.verifyCSR(csr)
     },
     cancelUpload:function(){
         this.setState({
