@@ -6,8 +6,9 @@
 //Importing App Components
 var APP         = require('./app').APP;
 var ShowCerts      = require('./showcerts/app-showcerts');
-var VerifyCSR      = require('./verifycsr/app-verifycsr');
-var RevokedCerts= require('./revokedcerts/app-revokedcerts');
+var VerifyCSR    = require('./verifycsr/app-verifycsr');
+var GenCert      = require('./gencert/app-gencert');
+var RevokedCerts = require('./revokedcerts/app-revokedcerts');
 
 
 var Login       = require('./auth/app-login');
@@ -39,8 +40,9 @@ var AppRouter = {
         { path : "login"        ,component: Login},
         { path : 'dashboard'    ,component:DashBoard   ,onEnter:requireAuth},
 
-        { path : "showcerts"       ,component: ShowCerts      ,onEnter:requireAuth},
-        { path : "verifycsr"       ,component: VerifyCSR      ,onEnter:requireAuth},
+        { path : "showcerts"    ,component: ShowCerts    ,onEnter:requireAuth},
+        { path : "verifycsr"    ,component: VerifyCSR    ,onEnter:requireAuth},
+        { path : "gencert"      ,component: GenCert    ,onEnter:requireAuth},
         { path : "revokedcerts" ,component: RevokedCerts ,onEnter:requireAuth}
 
     ]

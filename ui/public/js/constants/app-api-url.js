@@ -9,5 +9,10 @@ module.exports = {
     REVOKED_CERTS   : '/show/revokedcerts',
     REVOKE_CERTS    : '/revoke',
     UPLOAD_CSR      : '/uploadCSR',
-    VERIFY_CSR      : '/verifycsr'
+    VERIFY_CSR      : '/verifycsr',
+    SIGN_CSR        : '/signcsr',
+    GEN_CERT_DEFAULT: '/gencertdefault',
+    GEN_CERT_CUSTOM : '/gencertcustom',
+    CERT_DOWNLOAD   : '/getcert/#fname#'
+
 };

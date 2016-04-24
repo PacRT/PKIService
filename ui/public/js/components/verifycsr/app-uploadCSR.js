@@ -96,6 +96,11 @@ var UploadCSR = React.createClass({
         csr["csr"] = _.has(this.refs, "csrText")  ? this.refs.csrText.contentWindow.document.body.innerText : this.state.textAreaCSR ;
         VerifyCSRActions.verifyCSR(csr)
     },
+    signCSR : function(){
+        var csr = {}
+        csr["csr"] = _.has(this.refs, "csrText")  ? this.refs.csrText.contentWindow.document.body.innerText : this.state.textAreaCSR ;
+        VerifyCSRActions.signCSR(csr)
+    },
     cancelUpload:function(){
         this.setState({
             files:[],
@@ -140,7 +145,6 @@ var UploadCSR = React.createClass({
                             { this.state.files.length > 0 ?
                              <iframe ref="csrText" id="csrText" src={this.state.files[0].preview} frameborder="0" height="400"
                              width="95%"></iframe> : <textarea onFocus={this._handleTextAreaChange} onChange={this._handleTextAreaChange} ref="csrTextArea"  rows="10" cols="160" value={this.state.textAreaCSR}>
-
                              </textarea>
                             }
 
@@ -148,8 +152,7 @@ var UploadCSR = React.createClass({
 
                     </Row>
                     <RaisedButton  label="Verify CSR" style={styles.verify_button} onTouchTap={this.verifyCSR}/>
-
-
+                    <RaisedButton  label="Sign CSR" style={styles.verify_button} onTouchTap={this.signCSR}/>
                 </Grid>
             </div>
         );

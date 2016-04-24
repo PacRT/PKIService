@@ -87,23 +87,23 @@ var dateformat = function(d) {
 var readDBCerts = function() {
   var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
    var certsDBArray = cert_db.split('\n')
-   console.log(certsDBArray)
+   //console.log(certsDBArray)
    var certs = []
    for (var line in certsDBArray) {
     //console.log(line)
     if ( certsDBArray[line] != '') {
       var certInfo = {}
       var cArray = certsDBArray[line].split('\t')
-      console.log(cArray)
+      //console.log(cArray)
       if ( cArray[0] != 'R' ) {
       certInfo['Status'] = cArray[0] == 'V' ? "Valid" : cArray[0] == 'E' ? "Expired" : "Unknown";
       certInfo['Expiry Date'] = dateformat(cArray[1])
       certInfo['File Name'] = cArray[4];
       certInfo['Subject'] = cArray[5];
-      console.log(certInfo)
+      //console.log(certInfo)
       certs.push(certInfo)
-      console.log(" XXXXXXXXXXX    Certs")
-      console.log(certs)
+      //console.log(" XXXXXXXXXXX    Certs")
+      //console.log(certs)
    }  } }
   //console.log(certs)
   return certs
@@ -113,14 +113,14 @@ var readDBCerts = function() {
 var readDBRevokedCerts = function() {
   var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
    var certsDBArray = cert_db.split('\n')
-   console.log(certsDBArray)
+   //console.log(certsDBArray)
    var certs = []
    for (var line in certsDBArray) {
     //console.log(line)
     if ( certsDBArray[line] != '') {
       var certInfo = {}
       var cArray = certsDBArray[line].split('\t')
-      console.log(cArray)
+      //console.log(cArray)
       if ( cArray[0] == 'R' ) {
       certInfo['Status'] = cArray[0] == 'R' ? "Revoked" : "Unknown";
       certInfo['Expiry Date'] = dateformat(cArray[1])
@@ -128,34 +128,32 @@ var readDBRevokedCerts = function() {
       certInfo['Revoked Reason'] = cArray[2] == '' ? '' : cArray[2].substring(cArray[2].indexOf(',')+1);
       certInfo['File Name'] = cArray[4];
       certInfo['Subject'] = cArray[5];
-      console.log(certInfo)
+      //console.log(certInfo)
       certs.push(certInfo)
    }  } }
-  console.log(certs)
+  //console.log(certs)
   return certs
 };
 
 var readCertsDB = function() {
   var cert_db = fs.readFileSync('../pki/ca/tls-ca/db/tls-ca.db', 'utf8');
    var certsDBArray = cert_db.split('\n')
-   console.log(certsDBArray)
+   //console.log(certsDBArray)
    var certInfo = {}
    var certs = []
    for (var line in certsDBArray) {
     //console.log(line)
     if ( certsDBArray[line] != '') {
       var cArray = certsDBArray[line].split('\t')
-      console.log(cArray)
       certInfo['Status'] = cArray[0] == 'V' ? "Valid" : cArray[0] == 'E' ? "Expired" : cArray[0] == 'R' ? "Revoked" : "Unknown";
       certInfo['Expiry Date'] = dateformat(cArray[1])
       certInfo['Revoked Date'] = cArray[2] == '' ? '' : dateformat(cArray[2].substring(0, cArray[2].indexOf(',')));
       certInfo['Revoked Reason'] = cArray[2] == '' ? '' : cArray[2].substring(cArray[2].indexOf(',')+1);
       certInfo['File Name'] = cArray[4];
       certInfo['Subject'] = cArray[5];
-      console.log(certInfo)
       certs.push(certInfo)
    }  }
-  console.log(certs)
+  //console.log(certs)
   return certs
 };
 
@@ -248,11 +246,7 @@ app.post('/api/v1/verifycsr', function(req, res) {
   req.on('data', function(chunk) {
       data += chunk;
   });
-  console.log(data)
-  console.log("after data XXXXXXXXXX")
-  console.log(req.body.csr)
 
-  console.log("after CSR XXXXXXXXXX")
   data = req.body.csr
 
 
@@ -320,6 +314,76 @@ app.post('/verifycsr', function(req, res) {
   });
 })
 
+app.get('/api/v1/getcert/:fname', function(req, res) {
+  console.log('Calling get cert req ')
+  var certFile = req.params.fname
+  console.log(certFile)
+  certFile = '/../pki/certs/'+certFile
+  res.setHeader('Content-disposition', 'attachment; filename=' +certFile);
+  res.download(__dirname+certFile)
+});
+
+
+// sign the csr
+app.post('/api/v1/signcsr', function(req, res) {
+  console.log('Calling signcsr req : '+req.ip)
+    
+    var data = req.body.csr
+    var randomInt = parseInt((Math.random() * (1000 - 100 + 1)), 10) + 100;
+    var timemillies =  Date.now()
+    var csrFile = 'CSR_'+randomInt+'_'+timemillies+'.csr'
+    var keyFile = 'KEY_'+randomInt+'_'+timemillies+'.key'
+    var certFile = 'CERT_'+randomInt+'_'+timemillies+'.crt'
+    var pkcsFile = 'PKCS_'+randomInt+'_'+timemillies+'.p12'
+
+    fs.writeFile("../pki/certs/"+csrFile, data, function(err) {
+      if(err) {
+        return console.log(err);
+      }    
+        console.log("The file was saved! "+csrFile);
+    });
+    var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
+    execSync(verifyCSR, function (err, stdout, stderr) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      //console.log(stdout);
+      if (stdout.indexOf("Certificate Request:") > -1) {
+        console.log('CSR verification Success')
+        //console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+
+        //TODO check the file exists, if it is then ? delete and sign again or pass on the existing one 
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var signCSR  = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' '
+                     +'-out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext '
+                     +'-passin pass:pass'
+        execSync(signCSR, function (err, stdout, stderr)  {
+         if (err) {
+           console.error(err);
+           res.end("Certificate Creation Failed  : "+err )
+           return;
+         }
+        //var cert = fs.readFileSync('../pki/certs/'+certFile);
+        //var readStream = fs.createReadStream('../pki/certs/'+certFile)
+        console.log("Client Certificate got signed : "+certFile);
+        res.send(certFile)
+        //res.setHeader('Content-disposition', 'attachment; filename=' +certFile);
+        //readStream.pipe(res)
+        //res.download('../pki/certs/'+certFile)
+        });
+      }
+      else
+        console.log('CSR verification failed')
+        //res.end("Certificate Creation Failed, Invalid CSR Request")
+    });
+})
+
+
 // sign the csr
 app.post('/signcsr', function(req, res) {
   console.log('Calling signcsr req : '+req.ip)
@@ -382,7 +446,7 @@ app.post('/signcsr', function(req, res) {
          }
         var cert = fs.readFileSync('../pki/certs/'+certFile);  // cert + tls-chain -> pkcs package
         console.log("Client Certificate got signed");
-        res.pipe(cert)
+        res.end(cert)
         });
       }
       else
@@ -391,6 +455,168 @@ app.post('/signcsr', function(req, res) {
   });
 })
 
+// Get the certificate
+app.post('/api/v1/gencertdefault', function(req, res) {
+  console.log('Calling getcert req ')
+
+  var randomInt = parseInt((Math.random() * (1000 - 100 + 1)), 10) + 100;
+  var timemillies =  Date.now()
+  var csrFile = 'CSR_'+randomInt+'_'+timemillies+'.csr'
+  var keyFile = 'KEY_'+randomInt+'_'+timemillies+'.key'
+  var certFile = 'CERT_'+randomInt+'_'+timemillies+'.crt'
+  
+    // key and csr
+    var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
+    var createCSR = 'openssl req -new -config '
+                     +'../pki/etc/client.conf -out ../pki/certs/'+csrFile+' '
+                     +'-keyout ../pki/certs/'+keyFile+' '
+                     +'-subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device '+randomInt+'" -passout pass:pass'
+
+    //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
+
+    execSync(createCSR, function(err, stdout, stderr) {
+      if (err) {
+          console.error(err);
+          res.end("Error")
+          return;
+       }
+      //console.log(stdout);
+      if (fs.existsSync('../pki/certs/'+csrFile)) {
+        //if (stdout.indexOf("Certificate Request:") > -1) {
+        console.log('CSR Creation Success')
+        stdout =  execS(verifyCSR, { encoding: 'utf8' });
+        //console.log(stdout)
+
+        console.log(stdout.indexOf("Subject:"))
+        //console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var pkcsFile = certsubject+'.p12'
+        var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' -out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext -passin pass:pass'
+        var pkcs12    = 'openssl pkcs12 -export '
+                    +'-name "Device 13 (Network Access)" '
+                    +'-caname "Sensity TLS CA" '
+                    +'-caname "Sensity Root CA" '
+                    +'-inkey ../pki/certs/'+keyFile+' '
+                    +'-in ../pki/certs/'+certFile+'  '
+                    +'-certfile ../pki/ca/tls-ca-chain.pem '
+                    +'-out ../pki/certs/'+pkcsFile+' '
+                    +'-passin pass:pass -passout pass:pass'
+
+        // var csr = fs.readFileSync('pki/certs/device13_web.csr')
+        execSync(createCRT, function (err, stdout, stderr)  {
+          if (err) {
+            console.error(err);
+            console.log('CRT Creation failed')
+            res.end("Error")
+            return;
+          }
+          console.log("Client Certificate got signed");
+          execSync(pkcs12, function(err, stdout, stderr) {
+            if (err) {
+              console.error(err);
+              console.log('PKCS Creation failed')
+              res.end("Error")
+              return;
+            }
+            res.send(pkcsFile)
+          });
+        });
+      }
+      else
+        console.log('CSR Creation failed')
+  });
+})
+
+
+// Get the certificate
+app.post('/api/v1/gencertcustom', function(req, res) {
+  console.log('Calling gencertbasic req ')
+  console.log(req.body)
+
+ /* var body = { C: 'US',
+               O: 'Sensity',
+               OU: 'Sensity Hardware',
+               CN: 'Device 2045',
+               PA: 'pass:pass' }*/
+  
+  var subject = '"'+'/C='+req.body.C+'/O='+req.body.O+'/OU='+req.body.OU+'/CN='+req.body.CN+ '" -passout '+req.body.PA
+  console.log(subject)
+
+  var randomInt = parseInt((Math.random() * (1000 - 100 + 1)), 10) + 100;
+  var timemillies =  Date.now()
+  var csrFile = 'CSR_'+randomInt+'_'+timemillies+'.csr'
+  var keyFile = 'KEY_'+randomInt+'_'+timemillies+'.key'
+  var certFile = 'CERT_'+randomInt+'_'+timemillies+'.crt'
+  
+    // key and csr
+    var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
+    var createCSR = 'openssl req -new -config '
+                     +'../pki/etc/client.conf -out ../pki/certs/'+csrFile+' '
+                     +'-keyout ../pki/certs/'+keyFile+' '
+                     +'-subj '+subject
+
+    //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
+
+    execSync(createCSR, function(err, stdout, stderr) {
+      if (err) {
+          console.error(err);
+          res.end("Error")
+          return;
+       }
+      //console.log(stdout);
+      if (fs.existsSync('../pki/certs/'+csrFile)) {
+        //if (stdout.indexOf("Certificate Request:") > -1) {
+        console.log('CSR Creation Success')
+        stdout =  execS(verifyCSR, { encoding: 'utf8' });
+        //console.log(stdout)
+
+        console.log(stdout.indexOf("Subject:"))
+        //console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var pkcsFile = certsubject+'.p12'
+        var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' -out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext -passin pass:pass'
+        var pkcs12    = 'openssl pkcs12 -export '
+                    +'-name "Device 13 (Network Access)" '
+                    +'-caname "Sensity TLS CA" '
+                    +'-caname "Sensity Root CA" '
+                    +'-inkey ../pki/certs/'+keyFile+' '
+                    +'-in ../pki/certs/'+certFile+'  '
+                    +'-certfile ../pki/ca/tls-ca-chain.pem '
+                    +'-out ../pki/certs/'+pkcsFile+' '
+                    +'-passin pass:pass -passout pass:pass'
+
+        // var csr = fs.readFileSync('pki/certs/device13_web.csr')
+        execSync(createCRT, function (err, stdout, stderr)  {
+          if (err) {
+            console.error(err);
+            console.log('CRT Creation failed')
+            res.end("Error")
+            return;
+          }
+          console.log("Client Certificate got signed");
+          execSync(pkcs12, function(err, stdout, stderr) {
+            if (err) {
+              console.error(err);
+              console.log('PKCS Creation failed')
+              res.end("Error")
+              return;
+            }
+            res.send(pkcsFile)
+          });
+        });
+      }
+      else
+        console.log('CSR Creation failed')
+  });
+})
 
 
 // Get the certificate
