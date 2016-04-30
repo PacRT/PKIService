@@ -324,6 +324,14 @@ app.get('/api/v1/getcert/:fname', function(req, res) {
 });
 
 
+//push client conf 
+app.get('/api/v1/getClientTLSConf', function(req, res) {
+  console.log('Calling getClientTLSConf req ')
+  var clientConf = fs.readFileSync('../pki/etc/client.conf');
+  res.send(clientConf)
+});
+
+
 // sign the csr
 app.post('/api/v1/signcsr', function(req, res) {
   console.log('Calling signcsr req : '+req.ip)
@@ -457,6 +465,83 @@ app.post('/signcsr', function(req, res) {
 
 // Get the certificate
 app.post('/api/v1/gencertdefault', function(req, res) {
+  console.log('Calling getcert req ')
+
+  var randomInt = parseInt((Math.random() * (1000 - 100 + 1)), 10) + 100;
+  var timemillies =  Date.now()
+  var csrFile = 'CSR_'+randomInt+'_'+timemillies+'.csr'
+  var keyFile = 'KEY_'+randomInt+'_'+timemillies+'.key'
+  var certFile = 'CERT_'+randomInt+'_'+timemillies+'.crt'
+  
+    // key and csr
+    var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
+    var createCSR = 'openssl req -new -config '
+                     +'../pki/etc/client.conf -out ../pki/certs/'+csrFile+' '
+                     +'-keyout ../pki/certs/'+keyFile+' '
+                     +'-subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device '+randomInt+'" -passout pass:pass'
+
+    //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
+
+    execSync(createCSR, function(err, stdout, stderr) {
+      if (err) {
+          console.error(err);
+          res.end("Error")
+          return;
+       }
+      //console.log(stdout);
+      if (fs.existsSync('../pki/certs/'+csrFile)) {
+        //if (stdout.indexOf("Certificate Request:") > -1) {
+        console.log('CSR Creation Success')
+        stdout =  execS(verifyCSR, { encoding: 'utf8' });
+        //console.log(stdout)
+
+        console.log(stdout.indexOf("Subject:"))
+        //console.log(stdout.substring(stdout.indexOf("Subject:")+8))
+        var temp = stdout.substring(stdout.indexOf("Subject:")+8)
+        temp = temp.substring(0, temp.indexOf("\n"))
+        temp = temp.replace(/, /g,'_').trim()
+        var certsubject = temp.replace(/ /g,'_').trim()
+        var certFile = certsubject+'.crt'
+        var pkcsFile = certsubject+'.p12'
+        var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile+' -out ../pki/certs/'+certFile+' -policy extern_pol -extensions client_ext -passin pass:pass'
+        var pkcs12    = 'openssl pkcs12 -export '
+                    +'-name "Device 13 (Network Access)" '
+                    +'-caname "Sensity TLS CA" '
+                    +'-caname "Sensity Root CA" '
+                    +'-inkey ../pki/certs/'+keyFile+' '
+                    +'-in ../pki/certs/'+certFile+'  '
+                    +'-certfile ../pki/ca/tls-ca-chain.pem '
+                    +'-out ../pki/certs/'+pkcsFile+' '
+                    +'-passin pass:pass -passout pass:pass'
+
+        // var csr = fs.readFileSync('pki/certs/device13_web.csr')
+        execSync(createCRT, function (err, stdout, stderr)  {
+          if (err) {
+            console.error(err);
+            console.log('CRT Creation failed')
+            res.end("Error")
+            return;
+          }
+          console.log("Client Certificate got signed");
+          execSync(pkcs12, function(err, stdout, stderr) {
+            if (err) {
+              console.error(err);
+              console.log('PKCS Creation failed')
+              res.end("Error")
+              return;
+            }
+            res.send(pkcsFile)
+          });
+        });
+      }
+      else
+        console.log('CSR Creation failed')
+  });
+})
+
+
+// Get the certificate
+app.post('/api/v1/gencertadavanced', function(req, res) {
   console.log('Calling getcert req ')
 
   var randomInt = parseInt((Math.random() * (1000 - 100 + 1)), 10) + 100;
