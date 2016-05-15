@@ -199,36 +199,13 @@ var certParser = function(file) {
 
 app.get('/api/v1/show/certificates', function(req, res) {
   console.log('Calling Show certificate')
-  /*var certPath  = '../pki/certs'
-  var certFiles = _getAllCertFiles(certPath)
-  console.log(certFiles)
-  var jsResult = []
-  for ( var certFile in certFiles ) {
-    console.log("cert file name : " + certFiles[certFile])
-    jsResult.push(certParser(certFiles[certFile]))
-  }
-
-  console.log(jsResult)*/
-  
-  //res.send(jsResult)
   res.send(readDBCerts())
-
 });
 
 app.get('/api/v1/show/revokedcerts', function(req, res) {
   console.log('Calling Show revokedcerts')
- /* var certPath  = '../pki/revoked'
-  var certFiles = _getAllCertFiles(certPath)
-  console.log(certFiles)
-  var jsResult = []
-  for ( var certFile in certFiles ) {
-    console.log("cert file name : " + certFiles[certFile])
-    jsResult.push(certParser(certFiles[certFile]))
-  }
-  console.log(jsResult)*/
   res.send(readDBRevokedCerts())
 });
-
 
 app.post('/api/v1/login', function(req, res) {
   console.log('Calling login')
@@ -323,14 +300,92 @@ app.get('/api/v1/getcert/:fname', function(req, res) {
   res.download(__dirname+certFile)
 });
 
+//read the tls client conf file
 
+var readClientConf = function(path) {
+    var clientConf = fs.readFileSync(path, 'utf8');
+
+   var clientConfArray = clientConf.split('\n')
+   //console.log(certsDBArray)
+   var section = []
+   var certInfo = {}
+   var section_name = ""
+   for (var line in clientConfArray) {
+
+    var confline = clientConfArray[line]
+    if ( confline != '' && confline.indexOf("[") != -1 ) {
+      if ( section.length != 0 ) {
+        console.log("inside section update")
+        console.log(section)
+        certInfo[section_name] = section
+        console.log(certInfo)
+        section = []
+      }
+      section_name = confline.substring(confline.indexOf("[")+1, confline.indexOf("]")).trim()
+      console.log(" section name : "+section_name)
+     }
+    if ( confline != ''  && confline.indexOf("=") != -1) {
+        var confItem = {}
+        var name = confline.substring(0, confline.indexOf("=")).trim()
+        var val = []
+        if ( confline.indexOf('#') != -1 ) {
+         val.push(confline.substring(confline.indexOf("=")+1,  confline.indexOf("#")).trim())
+         val.push(confline.substring(confline.indexOf("#")+1, confline.length).trim())
+        } else {
+         val.push(confline.substring(confline.indexOf("=")+1, confline.length).trim())
+        }
+        confItem[name] = val
+        //console.log(confItem)
+        section.push(confItem)
+        //console.log(section)
+    }  
+    //console.log(section)
+   }
+   certInfo[section_name] = section
+   console.log(certInfo)
+   return certInfo
+}
+
+var addSpace = function(msg, len) {
+   for (i=0; msg.length <= len;) { msg =  msg + ' '; console.log(msg)}
+  return msg
+}
+
+var writeTLSConf = function(config, filepath) {
+      fs.writeFile(filepath, config, function(err) {
+      if(err) {
+        return console.log(err);
+      }    
+        console.log("The file was saved! "+filepath);
+    });
+}
 //push client conf 
 app.get('/api/v1/getClientTLSConf', function(req, res) {
   console.log('Calling getClientTLSConf req ')
-  var clientConf = fs.readFileSync('../pki/etc/client.conf');
-  res.send(clientConf)
+  var clientInfo = readClientConf('../pki/etc/client.conf')
+  var clientConfFile = ''
+  Object.keys(clientInfo).forEach(function(key) {
+       clientConfFile =  clientConfFile + '[ '+key+' ]\n'
+       clientInfo[key].forEach(function(item) {
+        clientConfFile = clientConfFile + addSpace(Object.keys(item)[0], 28) +' = '+ addSpace(item[Object.keys(item)[0]][0], 35)
+        if (item[Object.keys(item)[0]].length > 1 ) 
+          clientConfFile = clientConfFile + '     #'+item[Object.keys(item)[0]][1] + '\n'
+        else 
+          clientConfFile = clientConfFile + '\n'
+       });
+       clientConfFile = clientConfFile + '\n'
+   });
+  console.log(clientConfFile)
+  writeTLSConf(clientConfFile, '../pki/etc/client.conf')
+  res.send(clientConfFile)
 });
 
+
+//push client conf 
+app.post('/api/v1/pushClientTLSConf', function(req, res) {
+  console.log('Calling getClientTLSConf req ')
+  res.send(readClientConf('../pki/etc/client.conf'))
+});
 
 // sign the csr
 app.post('/api/v1/signcsr', function(req, res) {
