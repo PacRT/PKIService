@@ -11,10 +11,11 @@ module.exports = {
     UPLOAD_CSR      : '/uploadCSR',
     VERIFY_CSR      : '/verifycsr',
     SIGN_CSR        : '/signcsr',
+    GEN_CERT_BASIC : '/gencertbasic',
     GEN_CERT_DEFAULT: '/gencertdefault',
     GEN_CERT_ADV    : '/gencertadavanced',
-    GEN_CLIENT_CONF : '/getClientTLSConf',
-    GEN_CERT_CUSTOM : '/gencertcustom',
+    GEN_BASIC_CLIENT_CONF : '/getbasicclientTLSconf',
+    GEN_ADV_CLIENT_CONF   : '/getadvancedclientTLSconf',
     CERT_DOWNLOAD   : '/getcert/#fname#'
 
 };

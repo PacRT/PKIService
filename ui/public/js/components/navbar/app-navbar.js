@@ -58,7 +58,7 @@ var NavBar = React.createClass({
             } else {
                 return (
                     <Nav>
-                        <NavItem eventKey={1} href="#/showcerts">TLS Service</NavItem>
+                        <NavItem eventKey={1} href="#/showcerts">Certificates</NavItem>
                         <NavItem eventKey={2} href="#/revokedcerts">Revoked Certificates</NavItem>
                         <NavItem eventKey={3} href="#/verifycsr">Verify/Sign CSR</NavItem>
                         <NavItem eventKey={4} href="#/gencert">Generate Certificate</NavItem>
