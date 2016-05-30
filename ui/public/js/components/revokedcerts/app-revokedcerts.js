@@ -73,6 +73,8 @@ var RevokedCerts = React.createClass({
                     }
                     </tbody>
                 </Table>
+                <br/>
+                <br/>
             </div>
         )
     }

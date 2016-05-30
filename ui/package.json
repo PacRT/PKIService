@@ -26,7 +26,7 @@
     "path": "^0.12.7",
     "react": "^0.14.3",
     "react-addons-update": "^0.14.3",
-    "react-bootstrap": "^0.28.1",
+    "react-bootstrap": "^0.29.4",
     "react-dom": "^0.14.3",
     "react-dropzone": "^3.4.0",
     "react-router": "^2.0.0-rc5",

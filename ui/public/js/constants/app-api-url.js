@@ -14,8 +14,9 @@ module.exports = {
     GEN_CERT_BASIC : '/gencertbasic',
     GEN_CERT_DEFAULT: '/gencertdefault',
     GEN_CERT_ADV    : '/gencertadavanced',
-    GEN_BASIC_CLIENT_CONF : '/getbasicclientTLSconf',
-    GEN_ADV_CLIENT_CONF   : '/getadvancedclientTLSconf',
+    GET_BASIC_CLIENT_CONF : '/getbasicclientTLSconf',
+    GET_ADV_CLIENT_CONF   : '/getadvancedclientTLSconf',
+    SAVE_CLIENT_CONF   : '/saveclienttlsconf',
     CERT_DOWNLOAD   : '/getcert/#fname#'
 
 };

@@ -298,7 +298,7 @@ var createclientTLSconf =  function(clientInfo) {
   Object.keys(clientInfo).forEach(function(key) {
        clientConfFile =  clientConfFile + '[ '+key+' ]\n'
        clientInfo[key].forEach(function(item) {
-        clientConfFile = clientConfFile + addSpace(Object.keys(item)[0], 28) +' = '+ addSpace(item[Object.keys(item)[0]][0], 35)
+        clientConfFile = clientConfFile + addSpace(Object.keys(item)[0], 28) +' = '+ addSpace(item[Object.keys(item)[0]][0], 25)
         if (item[Object.keys(item)[0]].length > 1 ) 
           clientConfFile = clientConfFile + '     #'+item[Object.keys(item)[0]][1] + '\n'
         else 
@@ -308,7 +308,6 @@ var createclientTLSconf =  function(clientInfo) {
    });
   log.debug(clientConfFile)
   writeTLSConf(clientConfFile, '../pki/etc/client.conf')
-  res.send(clientConfFile)
 }
 
 var getBasicClientTLSConfig = function(path) {
@@ -458,6 +457,21 @@ app.post('/signcsr', function(req, res) {
         log.debug('CSR verification failed')
     });
   });
+})
+
+app.post('/api/v1/saveclienttlsconf', function(req, res) {
+  console.log(" calling saveclienttlsconf")
+  console.log(req.body)
+  try {
+    createclientTLSconf(req.body)
+  }
+  catch (ex){
+    console.log(ex)
+    log.error(ex)
+    res.send("Failed to Save Configuration")
+    return
+  }
+  res.send("Configuration Saved")
 })
 
 // Get the certificate

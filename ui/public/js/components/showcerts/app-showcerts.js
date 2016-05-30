@@ -122,6 +122,9 @@ var ShowCerts = React.createClass({
                     </div>
                     <div className="col-md-2">
                         <Button onClick={this._handleRevoke}>Revoke</Button>
+                    <br/>
+                    <br/>
+                    <br/>
                     </div>
                     </div>
             </div>
