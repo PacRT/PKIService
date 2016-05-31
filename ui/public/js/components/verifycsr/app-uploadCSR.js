@@ -81,6 +81,11 @@ var UploadCSR = React.createClass({
       return {
           "verify_button": {
               "float": "right",
+              "margin-top": "12px",
+              "margin-left": "12px"
+          },
+           "sign_button": {
+              "float": "right",
               "margin-top": "12px"
           }
       }
@@ -151,8 +156,8 @@ var UploadCSR = React.createClass({
                         </Col>
 
                     </Row>
-                    <RaisedButton  label="Verify CSR" style={styles.verify_button} onTouchTap={this.verifyCSR}/>
-                    <RaisedButton  label="Sign CSR" style={styles.verify_button} onTouchTap={this.signCSR}/>
+                    <RaisedButton label="Verify CSR" style={styles.verify_button} onTouchTap={this.verifyCSR}/>
+                    <RaisedButton label="Sign CSR" style={styles.verify_button} onTouchTap={this.signCSR}/>
                 </Grid>
             </div>
         );
