@@ -484,8 +484,7 @@ app.post('/api/v1/gencertadavanced', function(req, res) {
                    +'/O='+clientInfo.organizationName
                    +'/OU='+clientInfo.organizationalUnitName
                    +'/CN='+clientInfo.commonName+ '"'
-  //"/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 3434343434"
-  //C=US_O=Sensity_OU=Sensity_Hardware_CN=Device_3434343434.crt
+
   log.debug(subject)
   console.log(subject)
   var fileNamePrefix = subject.substring(subject.indexOf('/C=')+1, subject.length-1)
@@ -535,9 +534,9 @@ app.post('/api/v1/gencertadavanced', function(req, res) {
                         +' -out ../pki/certs/'+certFile
                         +' -policy extern_pol -extensions client_ext -passin pass:pass'
     var pkcs12  = 'openssl pkcs12 -export '
-                    +'-name "Device 13 (Network Access)" '
-                    +'-caname "Sensity TLS CA" '
-                    +'-caname "Sensity Root CA" '
+                    +'-name "Device (Network Access)" '
+                    +'-caname "PacRT TLS CA" '
+                    +'-caname "PacRT Root CA" '
                     +'-inkey ../pki/certs/'+keyFile+' '
                     +'-in ../pki/certs/'+certFile+'  '
                     +'-certfile ../pki/ca/tls-ca-chain.pem '
@@ -599,9 +598,6 @@ app.post('/api/v1/gencertbasic', function(req, res) {
   var subject = '"'+'/C='+req.body.C+'/O='+req.body.O+'/OU='+req.body.OU+'/CN='+req.body.CN+ '"'
   log.debug(subject)
 
-  //"/C=US/O=Sensity/OU=Sensity Hardware/CN=Device 3434343434"
-  //C=US_O=Sensity_OU=Sensity_Hardware_CN=Device_3434343434.crt
-
   var fileNamePrefix = subject.substring(subject.indexOf('/C=')+1, subject.length-1)
   fileNamePrefix = fileNamePrefix.replace(/\//g,'_').replace(/ /g,'_').trim()
 
@@ -622,7 +618,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
   }
   catch (ex) {
     log.error(ex)
-    res.send("CSR Creation Failed: "+csrFile)
+    res.send("Error: CSR Creation Failed. "+csrFile)
     var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
     execS(remove_file, { encoding: 'utf8' });
     return
@@ -632,7 +628,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
     try { stdout =  execS(verifyCSR, { encoding: 'utf8' }); } 
     catch (ex) {
       log.error(ex)
-      res.send("verify CSR Failed: "+csrFile)
+      res.send("Error: verify CSR Failed. "+csrFile)
       var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
       execS(remove_file, { encoding: 'utf8' });
       return
@@ -642,9 +638,9 @@ app.post('/api/v1/gencertbasic', function(req, res) {
                         +' -out ../pki/certs/'+certFile
                         +' -policy extern_pol -extensions client_ext -passin '+req.body.PA
     var pkcs12  = 'openssl pkcs12 -export '
-                    +'-name "Device 13 (Network Access)" '
-                    +'-caname "Sensity TLS CA" '
-                    +'-caname "Sensity Root CA" '
+                    +'-name "Device (Network Access)" '
+                    +'-caname "PacRT TLS CA" '
+                    +'-caname "PacRT Root CA" '
                     +'-inkey ../pki/certs/'+keyFile+' '
                     +'-in ../pki/certs/'+certFile+'  '
                     +'-certfile ../pki/ca/tls-ca-chain.pem '
@@ -657,7 +653,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
       log.error(ex)
       var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile
       execS(remove_file, { encoding: 'utf8' });
-      res.send("Certification Creation Failed: "+certFile)
+      res.send("Error: Certification Creation Failed. "+certFile)
       return
     }
     log.debug("Client Certificate got signed");
@@ -668,7 +664,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
       log.error(ex)
       var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile+' ../pki/certs/'+pkcsFile
       execS(remove_file, { encoding: 'utf8' });
-      res.send("PKCS Creation Failed: "+pkcsFile)
+      res.send("Error: PKCS Creation Failed. "+pkcsFile)
       return
     }
     try {
@@ -683,7 +679,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
     }
     catch (ex) {
       log.error(ex)
-      res.send("File Creation Failed")
+      res.send("Error: File Creation Failed.")
       return
     }
     pkcsFile = fileNamePrefix+'.p12'
@@ -693,7 +689,7 @@ app.post('/api/v1/gencertbasic', function(req, res) {
     log.debug('CSR Creation failed');
     var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
     execS(remove_file, { encoding: 'utf8' });
-    res.send("CSR File Not Found")
+    res.send("Error: CSR File Not Found.")
   }
 })
 
@@ -711,8 +707,6 @@ app.post('/getcert', function(req, res) {
     // key and csr
     var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
     var createCSR = 'openssl req -new -config ../pki/etc/client.conf -out ../pki/certs/'+csrFile+' -keyout ../pki/certs/'+keyFile+' -subj "/C=US/O=Sensity/OU=Sensity Hardware/CN=Device '+randomInt+'" -passout pass:pass'
-
-    //exec('openssl req -text -in '+'/tmp/test.csr'+' -noout', (err, stdout, stderr) => {
 
     execSync(createCSR, function(err, stdout, stderr) {
       if (err) {
@@ -746,7 +740,6 @@ app.post('/getcert', function(req, res) {
                     +'-out ../pki/certs/'+pkcsFile+' '
                     +'-passin pass:pass -passout pass:pass'
 
-        // var csr = fs.readFileSync('pki/certs/device13_web.csr')
         execSync(createCRT, function (err, stdout, stderr)  {
           if (err) {
             console.error(err);
@@ -784,19 +777,9 @@ var revokeCertificate = function(certFile, reason) {
     log.debug(result)
     result = execS(updateRootCrl, { encoding: 'utf8' });
     log.debug(result)
-    //execS('mv '+certFile+' ../pki/revoked/', { encoding: 'utf8' });
     return true
-   /* execS(revoke, (err, stdout, stderr) => {
-      if (err) {
-        console.error(err);
-        res.end('Revoke Failed')
-        return false;
-       }
-      log.debug('CRT revoke Success '+stdout+"   stderr : "+stderr)
-      execS('mv '+certFile+' ../pki/revoked/', { encoding: 'utf8' });
-      return true
-    });*/
 }
+
 app.post('/api/v1/revoke', function(req, res) {
   log.debug('Calling revoke')
   var result = ''

@@ -77,20 +77,10 @@ var Login = React.createClass({
                                 <Card>
                                     <CardHeader
                                         style={cardheader_style}
-                                        title="Upload Certificate File"
+                                        title="Certificate File"
                                     />
                                 </Card>
                                 </Dropzone>
-                                <Input
-                                    text="Public Key"
-                                    ref="userName"
-                                    type="text"
-                                    validate={this.isEmpty}
-                                    value={this.state.userName}
-                                    defaultValue={this.state.userName}
-                                    onChange={this.handleUserNameInput}
-                                    emptyMessage="User Name can't be empty"
-                                />
                                 <Input
                                     text="Private Key"
                                     ref="userName"
