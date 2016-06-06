@@ -1,0 +1,36 @@
+/**
+ * Created by Hardik on 2/6/16.
+ */
+var AppDispatcher = require('../dispatchers/app-dispatcher');
+var AppConstants = require('../constants/app-constants');
+var EventEmitter = require('events').EventEmitter;
+var ObjectAssign = require('object-assign');
+
+var CHANGE_EVENT = "change";
+var _cItem = {};
+var ServerConfStore  = ObjectAssign({},EventEmitter.prototype,{
+    addChangeListener:function(cb){
+        this.on(CHANGE_EVENT, cb);
+    },
+    removeChangeListener:function(cb){
+        this.removeListener(CHANGE_EVENT, cb);
+    },
+    getServerConf : function() {
+        return _cItem;
+    }
+});
+
+AppDispatcher.register(function(payload){
+    var action = payload.action;
+    switch (action.actionType){
+        case AppConstants.GET_ADV_SERVER_CONF:
+            _cItem = action.response;
+            ServerConfStore.emit(CHANGE_EVENT);
+            break;
+        default:
+            return true;
+
+    }
+});
+
+module.exports = ServerConfStore;

@@ -62,6 +62,7 @@ var NavBar = React.createClass({
                         <NavItem eventKey={2} href="#/revokedcerts">Revoked Certificates</NavItem>
                         <NavItem eventKey={3} href="#/verifycsr">Verify/Sign CSR</NavItem>
                         <NavItem eventKey={4} href="#/gencert">Generate Certificate</NavItem>
+                        <NavItem eventKey={4} href="#/serverconf">Server Config</NavItem>
                         <NavItem eventKey={4} href="#/clientconf">Client Config</NavItem>
                         <NavItem eventKey={6} onClick={this.logout} href="#/logout">Logout</NavItem>
                     </Nav>

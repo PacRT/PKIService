@@ -11,12 +11,15 @@ module.exports = {
     UPLOAD_CSR      : '/uploadCSR',
     VERIFY_CSR      : '/verifycsr',
     SIGN_CSR        : '/signcsr',
-    GEN_CERT_BASIC : '/gencertbasic',
-    GEN_CERT_DEFAULT: '/gencertdefault',
+    GEN_CERT_CLIENT : '/gencertclient',
+    GEN_CERT_SERVER : '/gencertserver',
     GEN_CERT_ADV    : '/gencertadavanced',
     GET_BASIC_CLIENT_CONF : '/getbasicclientTLSconf',
+    GET_BASIC_SERVER_CONF : '/getbasicserverTLSconf',
     GET_ADV_CLIENT_CONF   : '/getadvancedclientTLSconf',
+    GET_ADV_SERVER_CONF   : '/getServerTLSconf',
     SAVE_CLIENT_CONF   : '/saveclienttlsconf',
+    SAVE_SERVER_CONF   : '/saveservertlsconf',
     CERT_DOWNLOAD   : '/getcert/#fname#'
 
 };

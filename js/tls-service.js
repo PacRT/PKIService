@@ -2,6 +2,7 @@ var fs      = require('fs');
 var path      = require('path');
 var tls     = require('tls');
 var express = require('express');
+var https = require('https');
 var app     = express();
 var execSync = require('child_process').exec;
 var execS = require('child_process').execSync;
@@ -244,7 +245,7 @@ app.get('/api/v1/getcert/:fname', function(req, res) {
 });
 
 //read the tls client conf file
-var readClientConf = function(path) {
+var readConf = function(path) {
   var clientConf = fs.readFileSync(path, 'utf8');
    var clientConfArray = clientConf.split('\n')
    var section = []
@@ -293,7 +294,8 @@ var writeTLSConf = function(config, filepath) {
     });
 }
 
-var createclientTLSconf =  function(clientInfo) {
+// remove client spec
+var createTLSconf =  function(clientInfo, path) {
   var clientConfFile = ''
   Object.keys(clientInfo).forEach(function(key) {
        clientConfFile =  clientConfFile + '[ '+key+' ]\n'
@@ -307,14 +309,29 @@ var createclientTLSconf =  function(clientInfo) {
        clientConfFile = clientConfFile + '\n'
    });
   log.debug(clientConfFile)
-  writeTLSConf(clientConfFile, '../pki/etc/client.conf')
+  writeTLSConf(clientConfFile, path)
 }
 
 var getBasicClientTLSConfig = function(path) {
-  var clientTLSConfigInfo = readClientConf(path)
+  var clientTLSConfigInfo = readConf(path)
   var result = {}
   clientTLSConfigInfo['client_dn'].forEach(function(item) {
-    log.debug(item)
+    //log.debug(item)
+     result[Object.keys(item)[0]] = item[Object.keys(item)[0]][0]
+  })
+  log.debug(result)
+  return result
+}
+
+var getBasicServerTLSConfig = function(path) {
+  var configInfo = readConf(path)
+  var result = {}
+  configInfo['default'].forEach(function(item) {
+    //log.debug(item)
+     result[Object.keys(item)[0]] = item[Object.keys(item)[0]][0]
+  })
+  configInfo['server_dn'].forEach(function(item) {
+    //log.debug(item)
      result[Object.keys(item)[0]] = item[Object.keys(item)[0]][0]
   })
   log.debug(result)
@@ -324,14 +341,28 @@ var getBasicClientTLSConfig = function(path) {
 //push client conf 
 app.get('/api/v1/getadvancedclientTLSconf', function(req, res) {
   log.debug('Calling getClientTLSConf req ')
-  var clientInfo = readClientConf('../pki/etc/client.conf')
+  var clientInfo = readConf('../pki/etc/client.conf')
   log.debug(clientInfo)
   res.send(clientInfo)
 });
 
+//push client conf 
+app.get('/api/v1/getServerTLSconf', function(req, res) {
+  log.debug('Calling getServerTLSConf req ')
+  var confInfo = readConf('../pki/etc/server.conf')
+  log.debug(confInfo)
+  res.send(confInfo)
+});
+
+
 app.get('/api/v1/getbasicclientTLSconf', function(req, res) {
   log.debug('Calling getClientTLSConf req ')
   res.send(getBasicClientTLSConfig('../pki/etc/client.conf'))
+});
+
+app.get('/api/v1/getbasicserverTLSconf', function(req, res) {
+  log.debug('Calling getServerTLSConf req ')
+  res.send(getBasicServerTLSConfig('../pki/etc/server.conf'))
 });
 
 // sign the csr
@@ -463,7 +494,7 @@ app.post('/api/v1/saveclienttlsconf', function(req, res) {
   console.log(" calling saveclienttlsconf")
   console.log(req.body)
   try {
-    createclientTLSconf(req.body)
+    createTLSconf(req.body, "../pki/etc/client.conf")
   }
   catch (ex){
     console.log(ex)
@@ -473,6 +504,23 @@ app.post('/api/v1/saveclienttlsconf', function(req, res) {
   }
   res.send("Configuration Saved")
 })
+
+
+app.post('/api/v1/saveservertlsconf', function(req, res) {
+  console.log(" calling saveservertlsconf")
+  console.log(req.body)
+  try {
+    createTLSconf(req.body, "../pki/etc/server.conf")
+  }
+  catch (ex){
+    console.log(ex)
+    log.error(ex)
+    res.send("Failed to Save Configuration")
+    return
+  }
+  res.send("Configuration Saved")
+})
+
 
 // Get the certificate
 app.post('/api/v1/gencertadavanced', function(req, res) {
@@ -591,8 +639,8 @@ app.post('/api/v1/gencertadavanced', function(req, res) {
 
 
 // Get the certificate
-app.post('/api/v1/gencertbasic', function(req, res) {
-  log.debug('Calling gencertbasic req ')
+app.post('/api/v1/gencertclient', function(req, res) {
+  log.debug('Calling gencertclient req ')
   log.debug(req.body)
   
   var subject = '"'+'/C='+req.body.C+'/O='+req.body.O+'/OU='+req.body.OU+'/CN='+req.body.CN+ '"'
@@ -619,8 +667,8 @@ app.post('/api/v1/gencertbasic', function(req, res) {
   catch (ex) {
     log.error(ex)
     res.send("Error: CSR Creation Failed. "+csrFile)
-    var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
-    execS(remove_file, { encoding: 'utf8' });
+    try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+    execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
     return
   }
   if (fs.existsSync('../pki/certs/'+csrFile)) {
@@ -629,8 +677,8 @@ app.post('/api/v1/gencertbasic', function(req, res) {
     catch (ex) {
       log.error(ex)
       res.send("Error: verify CSR Failed. "+csrFile)
-      var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
-      execS(remove_file, { encoding: 'utf8' });
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
       return
     }
     log.debug(stdout.indexOf("Subject:"))
@@ -645,14 +693,14 @@ app.post('/api/v1/gencertbasic', function(req, res) {
                     +'-in ../pki/certs/'+certFile+'  '
                     +'-certfile ../pki/ca/tls-ca-chain.pem '
                     +'-out ../pki/certs/'+pkcsFile+' '
-                    +'-passin pass:pass -passout '+req.body.PA
+                    +'-passin '+req.body.PA+' -passout '+req.body.PA
     try {
       execS(createCRT, { encoding: 'utf8' });
     }
     catch (ex) {
       log.error(ex)
-      var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile
-      execS(remove_file, { encoding: 'utf8' });
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
       res.send("Error: Certification Creation Failed. "+certFile)
       return
     }
@@ -662,8 +710,8 @@ app.post('/api/v1/gencertbasic', function(req, res) {
     }
     catch (ex) {
       log.error(ex)
-      var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile+' ../pki/certs/'+pkcsFile
-      execS(remove_file, { encoding: 'utf8' });
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile+' ../pki/certs/'+pkcsFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
       res.send("Error: PKCS Creation Failed. "+pkcsFile)
       return
     }
@@ -687,11 +735,115 @@ app.post('/api/v1/gencertbasic', function(req, res) {
   }
   else {
     log.debug('CSR Creation failed');
-    var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
-    execS(remove_file, { encoding: 'utf8' });
+    try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+    execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
     res.send("Error: CSR File Not Found.")
   }
 })
+
+// the certificate
+app.post('/api/v1/gencertserver', function(req, res) {
+  log.debug('Calling gencertserver req ')
+  log.debug(req.body)
+  
+  var subject = '"'+'/C='+req.body.C+'/O='+req.body.O+'/OU='+req.body.OU+'/CN='+req.body.CN+ '"'
+  log.debug(subject)
+
+  var fileNamePrefix = subject.substring(subject.indexOf('/C=')+1, subject.length-1)
+  fileNamePrefix = fileNamePrefix.replace(/\//g,'_').replace(/ /g,'_').trim()
+
+  var csrFile = fileNamePrefix+'.csr'+'.tmp'
+  var keyFile = fileNamePrefix+'.key'+'.tmp'
+  var certFile = fileNamePrefix+'.crt'+'.tmp'
+  var pkcsFile = fileNamePrefix+'.p12'+'.tmp'
+
+  // key and csr
+  var verifyCSR = 'openssl req -text -in '+'../pki/certs/'+csrFile+' -noout'
+  var createCSR = 'SAN='+req.body.SAN+' openssl req -new -config '
+                     +'../pki/etc/server.conf -out ../pki/certs/'+csrFile+' '
+                     +'-keyout ../pki/certs/'+keyFile+' '
+                     +'-subj '+subject+' -passout '+req.body.PA
+
+  try {
+    execS(createCSR, { encoding: 'utf8' });
+  }
+  catch (ex) {
+    log.error(ex)
+    res.send("Error: CSR Creation Failed. "+csrFile)
+    try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+    execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
+    return
+  }
+  if (fs.existsSync('../pki/certs/'+csrFile)) {
+    log.debug('CSR Creation Success')
+    try { stdout =  execS(verifyCSR, { encoding: 'utf8' }); } 
+    catch (ex) {
+      log.error(ex)
+      res.send("Error: verify CSR Failed. "+csrFile)
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
+      return
+    }
+    log.debug(stdout.indexOf("Subject:"))
+    var createCRT = 'openssl ca -batch -config ../pki/etc/tls-ca.conf -in ../pki/certs/'+csrFile
+                        +' -out ../pki/certs/'+certFile
+                        +' -extensions server_ext -passin '+req.body.PA
+    var pkcs12  = 'openssl pkcs12 -export '
+                    +'-name "Server (Network Access)" '
+                    +'-caname "PacRT TLS CA" '
+                    +'-caname "PacRT Root CA" '
+                    +'-inkey ../pki/certs/'+keyFile+' '
+                    +'-in ../pki/certs/'+certFile+'  '
+                    +'-certfile ../pki/ca/tls-ca-chain.pem '
+                    +'-out ../pki/certs/'+pkcsFile+' '
+                    +'-passin '+req.body.PA+' -passout '+req.body.PA
+    try {
+      execS(createCRT, { encoding: 'utf8' });
+    }
+    catch (ex) {
+      log.error(ex)
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
+      res.send("Error: Certification Creation Failed. "+certFile)
+      return
+    }
+    log.debug("Client Certificate got signed");
+    try {
+      execS(pkcs12, { encoding: 'utf8' });
+    }
+    catch (ex) {
+      log.error(ex)
+      try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile+' ../pki/certs/'+certFile+' ../pki/certs/'+pkcsFile
+      execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
+      res.send("Error: PKCS Creation Failed. "+pkcsFile)
+      return
+    }
+    try {
+      var csr_mv = 'mv ../pki/certs/'+csrFile+' ../pki/certs/'+fileNamePrefix+'.csr'
+      var key_mv = 'mv ../pki/certs/'+keyFile+' ../pki/certs/'+fileNamePrefix+'.key'
+      var crt_mv = 'mv ../pki/certs/'+certFile+' ../pki/certs/'+fileNamePrefix+'.crt'
+      var pkcs_mv = 'mv ../pki/certs/'+pkcsFile+' ../pki/certs/'+fileNamePrefix+'.p12'
+      execS(csr_mv, { encoding: 'utf8' });
+      execS(key_mv, { encoding: 'utf8' });
+      execS(crt_mv, { encoding: 'utf8' });
+      execS(pkcs_mv, { encoding: 'utf8' });
+    }
+    catch (ex) {
+      log.error(ex)
+      res.send("Error: File Creation Failed.")
+      return
+    }
+    pkcsFile = fileNamePrefix+'.p12'
+    res.send(pkcsFile)
+  }
+  else {
+    log.debug('CSR Creation failed');
+    try { var remove_file = 'rm ../pki/certs/'+csrFile+' ../pki/certs/'+keyFile
+    execS(remove_file, { encoding: 'utf8' }); } catch (ex) { log.error(ex) }
+    res.send("Error: CSR File Not Found.")
+  }
+})
+
 
 
 // Get the certificate TODO - remove ramdon file name generation
@@ -823,7 +975,46 @@ app.post('/revoke/:fname', function(req, res) {
 })
 
 
+
 app.listen('4000', function() {
   log.debug('TLS Server is listening on port '+'4000');
 });
+
+
+const options = {
+    pfx: fs.readFileSync('../pki/certs/pacrt.io.p12'),
+    passphrase: 'pass',
+
+    // This is necessary only if using the client certificate authentication.
+    requestCert: true,
+    rejectUnauthorized: true,
+    ca: [fs.readFileSync('../pki/ca/root-ca.crt'), fs.readFileSync('../pki/ca/tls-ca.crt')],
+
+    //added crl
+    crl: [fs.readFileSync('../pki/crl/tls-ca.crl'), fs.readFileSync('../pki/crl/root-ca.crl')]
+};
+
+// Create a service (the app object is just a callback).
+var secure_app = express();
+
+secure_app.use(express.static('views'));
+secure_app.use(express.static('bootstrap-3.3.6'));
+secure_app.use(cors(corsOptions));
+secure_app.use( bodyParser.json());
+
+// Create an HTTPS service identical to the HTTP service.
+https.createServer(options, secure_app).listen(4443, function() {
+  log.debug('TLS Server is listening on port 4443');
+});
+
+secure_app.post('/api/v1/login', function(req, res) {
+  console.log(" Calling login request")
+  res.send('login Success');
+})
+
+
+
+
+
+
 

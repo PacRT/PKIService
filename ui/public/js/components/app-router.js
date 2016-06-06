@@ -10,8 +10,8 @@ var VerifyCSR    = require('./verifycsr/app-verifycsr');
 var GenCert      = require('./gencert/app-gencert'); 
 
 var ClientConf      = require('./clientconf/app-clientconf'); 
+var ServerConf      = require('./serverconf/app-serverconf');
 var RevokedCerts = require('./revokedcerts/app-revokedcerts');
-
 
 var Login       = require('./auth/app-login');
 
@@ -46,7 +46,8 @@ var AppRouter = {
         { path : "verifycsr"    ,component: VerifyCSR    ,onEnter:requireAuth},
         { path : "gencert"      ,component: GenCert    ,onEnter:requireAuth},
         { path : "revokedcerts" ,component: RevokedCerts ,onEnter:requireAuth},
-        { path : "clientconf"   ,component: ClientConf ,onEnter:requireAuth}
+        { path : "clientconf"   ,component: ClientConf ,onEnter:requireAuth},
+        { path : "serverconf"   ,component: ServerConf ,onEnter:requireAuth}
     ]
 };
 

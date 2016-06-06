@@ -7,6 +7,19 @@ var API_URL = require('./getAPIURL');
 var AppConstants = require('../constants/app-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher.js');
 
+/*
+const tls = require('tls');
+const fs = require('fs');
+const options = {
+    pfx: fs.readFileSync('../pki/certs/C=US_O=PACRT_DOT_IO_OU=Pacrt_Austin_CN=Device_1.p12'),
+    ca: [fs.readFileSync('../pki/ca/root-ca.crt'), fs.readFileSync('../pki/ca/tls-ca.crt')],
+    crl: [fs.readFileSync('../pki/crl/tls-ca.crl'), fs.readFileSync('../pki/crl/root-ca.crl')],
+    rejectUnauthorized: true,
+    requestCert: true,
+    passphrase: 'pass'
+};
+*/
+
 module.exports = {
 
     get: function(api) {
