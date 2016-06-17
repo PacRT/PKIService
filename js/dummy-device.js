@@ -25,7 +25,7 @@ var options = {
   //ca: '/home/ubuntu/codes/pki-example-3/ca/tls-ca-chain.pem'
 };
 
-var client  = mqtt.connect('mqtts://secsrv.sensity.com', options);
+var client  = mqtt.connect('mqtts://pacrt.io', options);
 
 client.subscribe('/strmv1/gencert/cert/mynodeid');
 
