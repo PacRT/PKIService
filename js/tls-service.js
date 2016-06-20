@@ -982,7 +982,7 @@ app.listen('4000', function() {
 
 
 const options = {
-    pfx: fs.readFileSync('../pki/certs/pacrt.io.p12'),
+    cert: fs.readFileSync('../pki/ca/root-ca.crt'),
     passphrase: 'pass',
 
     // This is necessary only if using the client certificate authentication.
@@ -1007,7 +1007,7 @@ https.createServer(options, secure_app).listen(4443, function() {
   log.debug('TLS Server is listening on port 4443');
 });
 
-secure_app.post('/api/v1/login', function(req, res) {
+secure_app.get('/api/v1/login', function(req, res) {
   console.log(" Calling login request")
   res.send('login Success');
 })
